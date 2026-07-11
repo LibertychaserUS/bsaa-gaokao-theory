@@ -1,0 +1,44 @@
+{
+  "name": "bsaa-gaokao-theory",
+  "version": "0.1.0",
+  "description": "BSAA/GSIO theory implementation for Gaokao volunteer recommendation — OR paper artifacts.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/tests/**/*.test.js",
+    "test:fast": "node --test dist/tests/**/*.test.js",
+    "lint": "eslint src tests tools --ext .ts",
+    "lint:fix": "eslint src tests tools --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"tools/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\" \"tools/**/*.ts\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "verify:proofs": "npm run build && node dist/tools/runProofVerification.js",
+    "verify:architecture": "node tools/architecture-guard.mjs",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^17.7.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.4.0",
+    "prettier": "^3.4.0",
+    "ts-morph": "^25.0.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
