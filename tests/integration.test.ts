@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createPrismaClientForUrl } from "../src/adapters/prismaClient.js";
 
-// Integration tests use the project's default SQLite database.
-// `npm test` runs `npm run db:migrate:deploy` first.
+const testDbUrl = process.env.DATABASE_URL_TEST;
+if (testDbUrl === undefined || testDbUrl === "") {
+  throw new Error("DATABASE_URL_TEST environment variable is not set.");
+}
 
 const testSuffix = `-${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
+
+const prisma = createPrismaClientForUrl(testDbUrl);
 
 const { prismaEvidenceRepository } = await import("../src/adapters/prismaEvidenceRepository.js");
 const { prismaExperimentRepository, prismaOptimizationRunRepository } =
@@ -104,4 +109,9 @@ test("recordExperiment rejects unknown evidenceId", async () => {
     ),
     /does-not-exist not found/,
   );
+});
+
+// Disconnect Prisma after all integration tests to avoid open handles.
+test("integration cleanup", async () => {
+  await prisma.$disconnect();
 });

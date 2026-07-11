@@ -318,19 +318,33 @@ export function pathGain(algorithmUtility: number, baselineUtility: number): num
  * Partitions candidates by admission probability and returns at most
  * `capacity` candidates, preferring reach → steady → safety buckets.
  */
+/**
+ * Transparent 冲/稳/保 probability-tier baseline from Section 8.1.
+ *
+ * Partitions candidates by admission probability into closed intervals
+ *   reach [0.1, 0.3], steady [0.4, 0.7], safety [0.8, 1.0]
+ * and returns at most `capacity` candidates, preferring reach → steady → safety
+ * buckets, with each bucket sorted by admission probability descending.
+ *
+ * Candidates in the open gaps (0.3, 0.4) and (0.7, 0.8) are intentionally
+ * excluded, matching the "三段式" semantics of the transparent baseline.
+ */
 export function probabilityTierBaseline(
   candidates: readonly BsaaCandidate[],
   capacity: number,
 ): BsaaCandidate[] {
   if (capacity <= 0) return [];
-  const reach = candidates.filter((c) => c.probability >= 0.1 && c.probability < 0.3);
-  const steady = candidates.filter((c) => c.probability >= 0.4 && c.probability < 0.7);
+  const reach = candidates.filter((c) => c.probability >= 0.1 && c.probability <= 0.3);
+  const steady = candidates.filter((c) => c.probability >= 0.4 && c.probability <= 0.7);
   const safety = candidates.filter((c) => c.probability >= 0.8 && c.probability <= 1.0);
-  // Preserve bucket priority (reach → steady → safety) while sorting inside each bucket.
+  const byProbabilityDesc = (left: BsaaCandidate, right: BsaaCandidate): number => {
+    if (right.probability !== left.probability) return right.probability - left.probability;
+    return left.id.localeCompare(right.id);
+  };
   const ordered = [
-    ...valueIndexOrder(reach),
-    ...valueIndexOrder(steady),
-    ...valueIndexOrder(safety),
+    ...reach.sort(byProbabilityDesc),
+    ...steady.sort(byProbabilityDesc),
+    ...safety.sort(byProbabilityDesc),
   ];
   return ordered.slice(0, capacity);
 }

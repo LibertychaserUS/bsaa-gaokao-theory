@@ -600,7 +600,12 @@ export function longTermProxy(
   return totals;
 }
 
-/** 透明冲稳保启发式基准（Section 8.1）。 */
+/** 透明冲稳保启发式基准（Section 8.1）。
+ *
+ * 概率桶使用闭区间：reach [0.1, 0.3], steady [0.4, 0.7], safety [0.8, 1.0]。
+ * 桶内按 tierScore 降序、probability 降序、id 字典序选择，最终保持
+ * reach → steady → safety 的优先级。
+ */
 export function transparentBaselineSelection(
   candidates: readonly PaperCandidate[],
   capacity: number,
@@ -610,32 +615,39 @@ export function transparentBaselineSelection(
     throw new RangeError("Capacity must be a positive integer.");
   }
 
-  const sortedByTier = [...candidates].sort((a, b) => (b.tierScore ?? 0) - (a.tierScore ?? 0));
+  const sortedByTier = [...candidates].sort(
+    (a, b) =>
+      (b.tierScore ?? 0) - (a.tierScore ?? 0) ||
+      b.probability - a.probability ||
+      a.id.localeCompare(b.id),
+  );
   const reach = sortedByTier.filter((c) => c.probability >= 0.1 && c.probability <= 0.3);
   const steady = sortedByTier.filter((c) => c.probability >= 0.4 && c.probability <= 0.7);
   const safe = sortedByTier.filter((c) => c.probability >= 0.8 && c.probability <= 1.0);
 
-  const bucketSize = Math.max(1, Math.floor(capacity / 3));
-  const selected: string[] = [];
+  const selected = new Set<string>();
+  const ordered: string[] = [];
 
   function pickFrom(bucket: PaperCandidate[], count: number): void {
     for (const candidate of bucket) {
       if (count <= 0) break;
-      if (!selected.includes(candidate.id)) {
-        selected.push(candidate.id);
+      if (!selected.has(candidate.id)) {
+        selected.add(candidate.id);
+        ordered.push(candidate.id);
         count -= 1;
       }
     }
   }
 
+  const bucketSize = Math.max(1, Math.floor(capacity / 3));
   pickFrom(reach, bucketSize);
   pickFrom(steady, bucketSize);
   pickFrom(safe, bucketSize);
 
-  const remaining = sortedByTier.filter((c) => !selected.includes(c.id));
-  pickFrom(remaining, capacity - selected.length);
+  const remaining = sortedByTier.filter((c) => !selected.has(c.id));
+  pickFrom(remaining, capacity - ordered.length);
 
-  return selected.slice(0, capacity);
+  return ordered.slice(0, capacity);
 }
 
 /** 单纯形网格采样（用于 Theorem 5.3 的参数化前沿）。 */
@@ -671,8 +683,14 @@ export function sampleSimplexWeights(dimension: number, gridSteps = 10): Prefere
 
   const samples = gridSteps * gridSteps;
   const weights: PreferenceVector[] = [];
+  // Seeded deterministic fallback for dimensions > 3 to preserve reproducibility.
+  let state = 20260711 >>> 0;
+  const rng = (): number => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
   for (let s = 0; s < samples; s += 1) {
-    const raw = Array.from({ length: dimension }, () => Math.random());
+    const raw = Array.from({ length: dimension }, () => rng());
     const sum = raw.reduce((a, b) => a + b, 0);
     weights.push(raw.map((value) => value / sum));
   }

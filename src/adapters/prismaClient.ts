@@ -7,12 +7,24 @@ import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaSqlite } from "prisma-adapter-sqlite";
 
-function createAdapter(): PrismaSqlite {
-  const url = process.env.DATABASE_URL;
+function createAdapter(urlOverride?: string): PrismaSqlite {
+  const url = urlOverride ?? process.env.DATABASE_URL;
   if (url === undefined || url === "") {
     throw new Error("DATABASE_URL environment variable is not set.");
   }
   return new PrismaSqlite({ url });
 }
 
-export const prisma = new PrismaClient({ adapter: createAdapter() });
+function createPrismaClient(urlOverride?: string): PrismaClient {
+  return new PrismaClient({ adapter: createAdapter(urlOverride) });
+}
+
+export const prisma = createPrismaClient();
+
+/**
+ * Create a Prisma client bound to an explicit SQLite URL.
+ * Useful for tests that need an isolated database file.
+ */
+export function createPrismaClientForUrl(url: string): PrismaClient {
+  return createPrismaClient(url);
+}

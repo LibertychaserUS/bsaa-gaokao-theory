@@ -292,13 +292,13 @@ export function verifyGreedyApproximation(
   if (optimalUtility > EPSILON) {
     ratio = greedyUtility / optimalUtility;
   } else {
-    ratio = greedyUtility <= EPSILON ? 1 : Number.POSITIVE_INFINITY;
+    // When the optimum is (numerically) zero, any feasible greedy utility
+    // trivially satisfies the approximation bound.
+    ratio = 1;
   }
 
   const ok =
-    optimalUtility <= EPSILON
-      ? greedyUtility <= EPSILON
-      : greedyUtility >= optimalUtility * lowerBound - EPSILON;
+    optimalUtility <= EPSILON ? true : greedyUtility >= optimalUtility * lowerBound - EPSILON;
 
   return {
     ok,

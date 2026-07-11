@@ -5,12 +5,13 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
-    "test": "npm run build && npm run db:migrate:deploy && node --test dist/tests/**/*.test.js",
-    "test:fast": "node --test dist/tests/**/*.test.js",
+    "test": "npm run build && DATABASE_URL_TEST=file:./bsaa-gaokao-theory.test.db npm run db:migrate:test && DATABASE_URL_TEST=file:./bsaa-gaokao-theory.test.db node --test dist/tests/**/*.test.js",
+    "test:dist": "node --test dist/tests/**/*.test.js",
+    "db:migrate:test": "DATABASE_URL=${DATABASE_URL_TEST} prisma migrate deploy",
     "lint": "eslint src tests tools --ext .ts",
     "lint:fix": "eslint src tests tools --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"tools/**/*.ts\"",
@@ -25,7 +26,6 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
@@ -47,9 +47,7 @@
     ]
   },
   "dependencies": {
-    "@prisma/adapter-libsql": "^7.8.0",
     "@prisma/client": "^7.8.0",
-    "better-sqlite3": "^12.11.1",
     "dotenv": "^17.4.2",
     "prisma": "^7.8.0",
     "prisma-adapter-sqlite": "^1.0.0"

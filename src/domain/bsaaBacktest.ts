@@ -273,29 +273,32 @@ export function greedySubmodularOptimizer(
   return valueIndexOrder(selected);
 }
 
-/** Transparent 冲/稳/保 baseline from Section 8.1. */
+/** Transparent 冲/稳/保 baseline from Section 8.1.
+ *
+ * Probability buckets are closed intervals:
+ *   reach [0.1, 0.3], steady [0.4, 0.7], safety [0.8, 1.0].
+ * Within each bucket candidates are sorted by school tier descending, then by
+ * admission probability descending. The final output preserves reach → steady
+ * → safety ordering.
+ */
 export function baselineReachSteadySafe(
   candidates: readonly BsaaScoredCandidate[],
   slotCount: number,
 ): BsaaScoredCandidate[] {
   const reach = candidates
     .filter((c) => c.p >= 0.1 && c.p <= 0.3)
-    .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p)
+    .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p || a.id.localeCompare(b.id))
     .slice(0, Math.floor(slotCount / 3));
   const steady = candidates
     .filter((c) => c.p >= 0.4 && c.p <= 0.7)
-    .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p)
+    .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p || a.id.localeCompare(b.id))
     .slice(0, Math.floor(slotCount / 3));
   const safe = candidates
     .filter((c) => c.p >= 0.8 && c.p <= 1.0)
-    .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p)
+    .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p || a.id.localeCompare(b.id))
     .slice(0, Math.max(0, slotCount - reach.length - steady.length));
 
-  // Order: reach → steady → safe, each segment sorted by admission probability descending.
-  const ordered = [...reach, ...steady, ...safe].sort((a, b) => {
-    const layer = (x: BsaaScoredCandidate): number => (x.p >= 0.8 ? 2 : x.p >= 0.4 ? 1 : 0);
-    return layer(a) - layer(b) || b.p - a.p || a.id.localeCompare(b.id);
-  });
+  const ordered = [...reach, ...steady, ...safe];
   return ordered.slice(0, slotCount);
 }
 

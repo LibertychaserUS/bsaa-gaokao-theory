@@ -22,6 +22,31 @@ export const bsaaCandidateSchema = z.object({
 export type BsaaCandidate = z.infer<typeof bsaaCandidateSchema>;
 export type BsaaCandidateInput = z.input<typeof bsaaCandidateSchema>;
 
+/**
+ * Paper-official candidate model: each candidate has a vector of prototype
+ * matching scores. The path value v_c(π) is computed as the weighted dot
+ * product with a preference vector π.
+ */
+export const candidatePrototypeSchema = z.object({
+  id: z.string().min(1),
+  probability: z.number().min(0).max(1),
+  prototypeValues: z.array(z.number().finite().nonnegative()).min(1),
+  qualityScore: z.number().finite().nonnegative().optional(),
+  tierScore: z.number().finite().nonnegative().optional(),
+});
+
+export type CandidatePrototype = z.infer<typeof candidatePrototypeSchema>;
+export type CandidatePrototypeInput = z.input<typeof candidatePrototypeSchema>;
+
+export const preferenceVectorSchema = z
+  .array(z.number().finite().nonnegative())
+  .refine((values) => {
+    const sum = values.reduce((a, b) => a + b, 0);
+    return values.length === 0 || Math.abs(sum - 1) <= 1e-6 || sum === 0;
+  }, "Preference weights must sum to 1 (or be empty for degenerate cases).");
+
+export type PreferenceVector = z.infer<typeof preferenceVectorSchema>;
+
 export const bsaaSelectionResultSchema = z.object({
   selectedIds: z.array(z.string()),
   orderedIds: z.array(z.string()),
@@ -153,6 +178,20 @@ export const optimizeRequestSchema = z.object({
 
 export type OptimizeRequest = z.infer<typeof optimizeRequestSchema>;
 
+/**
+ * Paper-official optimization request: candidates carry prototype values and
+ * the caller supplies a preference vector π. This is the request type used by
+ * the Layer 3 optimizer in the paper pipeline.
+ */
+export const prototypeOptimizeRequestSchema = z.object({
+  candidates: z.array(candidatePrototypeSchema).min(1),
+  preference: preferenceVectorSchema,
+  capacity: z.number().int().nonnegative(),
+  baseline: z.enum(["transparent_tier", "value_index"]).optional(),
+});
+
+export type PrototypeOptimizeRequest = z.infer<typeof prototypeOptimizeRequestSchema>;
+
 export const optimizeResponseSchema = z.object({
   request: optimizeRequestSchema,
   result: bsaaGreedyResultSchema,
@@ -166,6 +205,20 @@ export const optimizeResponseSchema = z.object({
 });
 
 export type OptimizeResponse = z.infer<typeof optimizeResponseSchema>;
+
+export const prototypeOptimizeResponseSchema = z.object({
+  request: prototypeOptimizeRequestSchema,
+  result: bsaaGreedyResultSchema,
+  baselineResult: bsaaSelectionResultSchema.optional(),
+  comparison: z
+    .object({
+      absoluteGain: z.number(),
+      relativeGain: z.number(),
+    })
+    .optional(),
+});
+
+export type PrototypeOptimizeResponse = z.infer<typeof prototypeOptimizeResponseSchema>;
 
 // -----------------------------------------------------------------------------
 // Validation helpers

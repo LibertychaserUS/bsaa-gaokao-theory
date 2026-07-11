@@ -5,10 +5,9 @@ coverage/
 .DS_Store
 .env
 .env.local
+.env.*
 *.tmp
 .husky/_
-.env
-.env.*
 *.db
 *.db-journal
 
