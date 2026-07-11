@@ -10,6 +10,8 @@
 - **数据库**：SQLite（通过 Prisma + `prisma-adapter-sqlite` + Node.js 内置 `node:sqlite`）。
 - **Schema 来源**：Zod（`src/schemas.ts`）是单一真相来源。
 - **读写校验**：所有写入前 Zod parse；所有读出后 Zod parse。
+- **Repository 接口**：`src/ports/repository.ts`
+- **Prisma 实现**：`src/adapters/prismaEvidenceRepository.ts`、`src/adapters/prismaExperimentRepository.ts`
 
 ## 表结构
 

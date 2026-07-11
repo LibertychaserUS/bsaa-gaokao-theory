@@ -15,7 +15,7 @@ import {
   type BsaaCandidate,
   type BsaaPreferenceProfile,
   type BsaaScoredCandidate,
-} from "../src/bsaaBacktest.js";
+} from "../src/domain/bsaaBacktest.js";
 
 const TOLERANCE = 1e-9;
 const ONE_MINUS_INV_E = 1 - 1 / Math.E;

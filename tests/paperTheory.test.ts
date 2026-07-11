@@ -19,7 +19,7 @@ import {
   verifySubmodularity,
   verifyValueIndexTheorem,
   type PaperCandidate,
-} from "../src/paperTheory.js";
+} from "../src/domain/paperTheory.js";
 
 const singleObjectiveCandidates = (): PaperCandidate[] => [
   { id: "a", probability: 0.2, prototypeValues: [9] },

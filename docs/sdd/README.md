@@ -30,5 +30,7 @@ docs/sdd/
 |---|---|---|---|
 | BSAA Core | 已实现 | - | 2026-07-11 |
 | Proof Verification | 已实现 | - | 2026-07-11 |
-| Evidence Registry | 设计中 | - | 2026-07-11 |
-| Experiment Log | 设计中 | - | 2026-07-11 |
+| Evidence Registry | 已实现 | - | 2026-07-11 |
+| Experiment Log | 已实现 | - | 2026-07-11 |
+| Backend Layers (Domain/Application/Ports/Adapters) | 已实现 | - | 2026-07-11 |
+| HTTP API | 未实现 | - | 2026-07-11 |

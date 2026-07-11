@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { type BsaaCandidate } from "../src/bsaaCore.js";
+import { type BsaaCandidate } from "../src/domain/bsaaCore.js";
 import {
   buildChongWenBaoBaseline,
   compareWithBaseline,
@@ -12,7 +12,7 @@ import {
   verifyGreedyApproximation,
   verifySubmodularity,
   verifyValueIndexTheorem,
-} from "../src/proofVerification.js";
+} from "../src/domain/proofVerification.js";
 
 const EPSILON = 1e-9;
 

@@ -6,12 +6,15 @@ It is intentionally split from the full product codebase so the mathematical art
 
 ## Scope
 
-- `src/bsaaCore.ts` — core submodular set function, value-index ordering, greedy selection, brute-force oracle.
-- `src/proofVerification.ts` — reproducible verification of Theorem 3.1, Theorem 4.2, Theorem 4.3.
-- `src/paperTheory.ts` — Pareto frontier and parametric weight sampling helpers for the paper.
-- `src/bsaaBacktest.ts` — backtesting utilities for calibrated risk models.
+- `src/domain/bsaaCore.ts` — core submodular set function, value-index ordering, greedy selection, brute-force oracle.
+- `src/domain/proofVerification.ts` — reproducible verification of Theorem 3.1, Theorem 4.2, Theorem 4.3.
+- `src/domain/paperTheory.ts` — Pareto frontier and parametric weight sampling helpers for the paper.
+- `src/domain/bsaaBacktest.ts` — backtesting utilities for calibrated risk models.
 - `src/schemas.ts` — Zod runtime schemas; single source of truth for TS types, API contracts, and DB serialization.
-- `src/db.ts` — SQLite persistence for evidence registry and experiment log.
+- `src/ports/repository.ts` — repository ports (interfaces) for persistence.
+- `src/adapters/` — Prisma/SQLite implementations of repository ports.
+- `src/application/` — use cases orchestrating domain logic and persistence.
+- `src/db.ts` — backward-compatible facade over repository adapters.
 - `tests/` — unit and property tests.
 - `docs/` — `theory_framework.md` and `proof_check_manual.md` from prior theory work.
 - `docs/sdd/` — SDD Box: architecture decisions, component specs, traceability matrix.
@@ -43,6 +46,17 @@ All commits are guarded by:
 - Husky pre-commit: lint-staged + typecheck + test
 - GitHub Actions: typecheck, lint, format, architecture guard, tests, proof verification
 - Architecture guard (AST): forbids cross-layer imports and cycles
+
+## Backend architecture
+
+The project uses a layered (hexagonal) architecture:
+
+- **Domain** (`src/domain/`): pure math and theorem verification, no I/O.
+- **Application** (`src/application/`): use cases like `optimizePlan` and `recordExperiment`.
+- **Ports** (`src/ports/`): repository interfaces.
+- **Adapters** (`src/adapters/`): Prisma/SQLite implementations and future HTTP/CLI adapters.
+
+See `docs/sdd/decisions/003-backend-architecture.md` for the full ADR.
 
 ## Database
 

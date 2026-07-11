@@ -8,8 +8,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node --test dist/tests/**/*.test.js",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "test": "npm run build && npm run db:migrate:deploy && node --test dist/tests/**/*.test.js",
     "test:fast": "node --test dist/tests/**/*.test.js",
     "lint": "eslint src tests tools --ext .ts",
     "lint:fix": "eslint src tests tools --ext .ts --fix",

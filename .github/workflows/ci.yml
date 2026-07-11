@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Apply database migrations
+        run: npm run db:migrate:deploy
+
       - name: Type check
         run: npm run typecheck
 

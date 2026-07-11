@@ -12,7 +12,7 @@ import {
   probabilityTierBaseline,
   valueIndexOrder,
   type BsaaCandidate,
-} from "../src/bsaaCore.js";
+} from "../src/domain/bsaaCore.js";
 
 const EPSILON = 1e-9;
 
@@ -64,9 +64,9 @@ test("greedySubmodularSelection returns a feasible plan sorted by value index", 
 
   const byId = new Map(pool.map((c) => [c.id, c]));
   const orderedValues = result.orderedIds
-    .map((id) => byId.get(id))
-    .filter((c): c is BsaaCandidate => c !== undefined)
-    .map((c) => c.value);
+    .map((id: string) => byId.get(id))
+    .filter((c: BsaaCandidate | undefined): c is BsaaCandidate => c !== undefined)
+    .map((c: BsaaCandidate) => c.value);
   assert.ok(orderedValues.length >= 2);
   assert.ok(orderedValues[0] >= orderedValues[1]);
 });

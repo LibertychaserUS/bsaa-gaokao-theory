@@ -5,7 +5,7 @@
  * Run with: npm run verify:proofs
  */
 
-import { runProofVerificationBattery } from "../src/proofVerification.js";
+import { runProofVerificationBattery } from "../src/domain/proofVerification.js";
 
 const battery = runProofVerificationBattery();
 

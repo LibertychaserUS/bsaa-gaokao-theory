@@ -16,7 +16,7 @@ import type {
   BsaaGreedyResult,
   BsaaGreedyTraceStep,
   BsaaSelectionResult,
-} from "./schemas.js";
+} from "../schemas.js";
 
 export type { BsaaCandidate, BsaaGreedyResult, BsaaGreedyTraceStep, BsaaSelectionResult };
 
