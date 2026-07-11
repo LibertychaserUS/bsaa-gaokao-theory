@@ -1,0 +1,16 @@
+@startuml
+left to right direction
+
+rectangle "Student\n(rank r)" as start
+rectangle "Layer 0\nAuto-tiering\nT(r) → tier t" as tier
+rectangle "Layer 1\nHard constraints\nprovince / subject / batch" as filter
+rectangle "Layer 2\nBayesian preference\nπ ∈ Δ_m" as pref
+rectangle "Layer 3\nGSIO optimizer\n(1-1/e) guarantee" as gsio
+rectangle "Ordered\nvolunteer list" as end
+
+start --> tier
+tier --> filter
+filter --> pref
+pref --> gsio
+gsio --> end
+@enduml

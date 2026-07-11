@@ -1,0 +1,576 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Selected programs by admission probability and path value",
+  "width": 400,
+  "height": 300,
+  "data": {
+    "values": [
+      {
+        "probability": 0.05,
+        "value": 0.8227333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8227333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8844000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8854000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8859666666666669,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8854666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7162333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7162333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7162333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8782666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8822666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7132333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7157333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8836000000000002,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8764333333333336,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8766333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8771666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8830333333333334,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7162333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8851333333333334,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7132333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8809333333333336,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7147333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8833333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7167333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7162333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8828,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7162333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7167333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8815000000000002,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8769000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7112333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8841000000000002,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8796666666666667,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8787666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8753333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8805666666666669,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8806333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8804333333333336,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8806333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8788,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8803666666666669,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8772000000000002,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8827666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8777000000000003,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8822333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8841333333333334,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8776000000000002,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8809000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8759000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8844000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8779666666666669,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8774333333333336,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8791333333333334,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8774666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8771666666666668,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8789333333333336,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8764000000000001,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8801000000000002,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7172333333333335,
+        "method": "Baseline",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.8823333333333335,
+        "method": "GSIO",
+        "selected": true
+      },
+      {
+        "probability": 0.05,
+        "value": 0.7177333333333334,
+        "method": "Baseline",
+        "selected": true
+      }
+    ]
+  },
+  "mark": {
+    "type": "point",
+    "filled": true,
+    "opacity": 0.7
+  },
+  "encoding": {
+    "x": {
+      "field": "probability",
+      "type": "quantitative",
+      "title": "Admission probability p_c"
+    },
+    "y": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Path value v_c(π)"
+    },
+    "color": {
+      "field": "method",
+      "type": "nominal",
+      "title": "Method"
+    },
+    "shape": {
+      "field": "method",
+      "type": "nominal"
+    }
+  }
+}

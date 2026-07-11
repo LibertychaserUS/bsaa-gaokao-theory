@@ -1,0 +1,431 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Sensitivity to ±5% preference perturbations",
+  "width": 400,
+  "height": 300,
+  "data": {
+    "values": [
+      {
+        "metric": "Utility",
+        "value": 0.3830231581582805
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.37612193647979586
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.383105240007685
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3924322233582889
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38510316614818496
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38360352557769734
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38187201421673356
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3910152128689379
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3832828032867539
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3839280081933927
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38036937464349535
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38410530875188215
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3803500286361403
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38351298202427775
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3878852621485478
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38369358485101007
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3879079185352923
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38314946375523506
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3793010735117419
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3760232829303232
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.386260502574016
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3894842626531353
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38533555220697885
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.378524013551682
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3864258117374597
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38648098475067727
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38849653398592743
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38082507248532976
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.385344636893327
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38751741148360014
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3811137675361218
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38325254142438137
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.37868969599574875
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38946893718179465
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38882948784422194
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3826938243976852
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38114365134075606
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38131597455515553
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38506417930914216
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.37695360470888434
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3837487399246167
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3847872115042566
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3832377568649877
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38278276437392705
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3852256028201447
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38404652855494203
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3859476974795715
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.3929116903488837
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38916798361101
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      },
+      {
+        "metric": "Utility",
+        "value": 0.38056926682288617
+      },
+      {
+        "metric": "Safety",
+        "value": 0.45963991233736345
+      }
+    ]
+  },
+  "mark": {
+    "type": "boxplot",
+    "extent": 1.5
+  },
+  "encoding": {
+    "x": {
+      "field": "metric",
+      "type": "nominal",
+      "title": "Metric"
+    },
+    "y": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Value"
+    },
+    "color": {
+      "field": "metric",
+      "type": "nominal",
+      "legend": null
+    }
+  }
+}

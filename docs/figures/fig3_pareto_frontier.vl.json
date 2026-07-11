@@ -1,0 +1,104 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Parametric Pareto frontier (3 objective projections)",
+  "width": 250,
+  "height": 250,
+  "data": {
+    "values": [
+      {
+        "index": 0,
+        "objective0": 0.2611645079503457,
+        "objective1": 0.2006315303808105,
+        "objective2": 0.3531114934702265,
+        "selectedCount": 10
+      },
+      {
+        "index": 1,
+        "objective0": 0.3648488038235748,
+        "objective1": 0.2006315303808105,
+        "objective2": 0.3531114934702265,
+        "selectedCount": 10
+      },
+      {
+        "index": 2,
+        "objective0": 0.3996600096396771,
+        "objective1": 0.2605340303808105,
+        "objective2": 0.32123937927650775,
+        "selectedCount": 10
+      },
+      {
+        "index": 3,
+        "objective0": 0.346682022843054,
+        "objective1": 0.31189293631831044,
+        "objective2": 0.2840653140265078,
+        "selectedCount": 10
+      },
+      {
+        "index": 4,
+        "objective0": 0.3467336082388874,
+        "objective1": 0.31189293631831044,
+        "objective2": 0.2247073140265078,
+        "selectedCount": 10
+      },
+      {
+        "index": 5,
+        "objective0": 0.39979269372593496,
+        "objective1": 0.24158153038081048,
+        "objective2": 0.33241277601400776,
+        "selectedCount": 10
+      },
+      {
+        "index": 6,
+        "objective0": 0.3999187436078799,
+        "objective1": 0.2605340303808105,
+        "objective2": 0.32123937927650775,
+        "selectedCount": 10
+      },
+      {
+        "index": 7,
+        "objective0": 0.40043392695606744,
+        "objective1": 0.2605340303808105,
+        "objective2": 0.2247073140265078,
+        "selectedCount": 10
+      },
+      {
+        "index": 8,
+        "objective0": 0.4007280433472723,
+        "objective1": 0.24158153038081048,
+        "objective2": 0.2407073140265078,
+        "selectedCount": 10
+      }
+    ]
+  },
+  "repeat": {
+    "column": [
+      "objective1",
+      "objective2"
+    ],
+    "row": [
+      "objective0",
+      "objective1"
+    ]
+  },
+  "spec": {
+    "mark": {
+      "type": "point",
+      "filled": true,
+      "color": "#2563eb"
+    },
+    "encoding": {
+      "x": {
+        "field": {
+          "repeat": "column"
+        },
+        "type": "quantitative"
+      },
+      "y": {
+        "field": {
+          "repeat": "row"
+        },
+        "type": "quantitative"
+      }
+    }
+  }
+}

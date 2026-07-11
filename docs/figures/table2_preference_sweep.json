@@ -1,0 +1,37 @@
+[
+  {
+    "profile": "Balanced",
+    "utility": 0.7951,
+    "safety": 0.9006,
+    "neutralQuality": 0.887,
+    "gainOverBaseline": 21.8
+  },
+  {
+    "profile": "School-first",
+    "utility": 0.8324,
+    "safety": 0.9006,
+    "neutralQuality": 0.8877,
+    "gainOverBaseline": 12.1
+  },
+  {
+    "profile": "Major-first",
+    "utility": 0.8011,
+    "safety": 0.9006,
+    "neutralQuality": 0.8855,
+    "gainOverBaseline": 37.1
+  },
+  {
+    "profile": "Region-first",
+    "utility": 0.7884,
+    "safety": 0.9006,
+    "neutralQuality": 0.8855,
+    "gainOverBaseline": 32.8
+  },
+  {
+    "profile": "Safety-first",
+    "utility": 0.8417,
+    "safety": 0.9006,
+    "neutralQuality": 0.8689,
+    "gainOverBaseline": 3.8
+  }
+]
