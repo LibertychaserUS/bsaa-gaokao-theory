@@ -10,5 +10,10 @@ coverage/
 .husky/_
 *.db
 *.db-journal
+*.sqlite
+*.sqlite3
+
+# Large raw database; generated output JSON is tracked instead.
+/data/gaokao.bsaa.sqlite
 
 /generated/prisma
