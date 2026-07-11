@@ -11,27 +11,14 @@
  * GSIO greedy algorithm, and a brute-force oracle for small instances.
  */
 
-export interface BsaaCandidate {
-  id: string;
-  value: number;
-  probability: number;
-}
+import type {
+  BsaaCandidate,
+  BsaaGreedyResult,
+  BsaaGreedyTraceStep,
+  BsaaSelectionResult,
+} from "./schemas.js";
 
-export interface BsaaSelectionResult {
-  selectedIds: string[];
-  orderedIds: string[];
-  utility: number;
-}
-
-export interface BsaaGreedyTraceStep {
-  step: number;
-  selectedId: string;
-  marginalGain: number;
-}
-
-export type BsaaGreedyResult = BsaaSelectionResult & {
-  trace: BsaaGreedyTraceStep[];
-};
+export type { BsaaCandidate, BsaaGreedyResult, BsaaGreedyTraceStep, BsaaSelectionResult };
 
 const EPSILON = 1e-12;
 

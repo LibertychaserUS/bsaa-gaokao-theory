@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// Evidence registry: theorems, papers, official data sources, and simulation records.
+model Evidence {
+  id         String   @id
+  sourceType String
+  title      String
+  authors    String?
+  year       Int?
+  doi        String?
+  url        String?
+  citedIn    String?
+  summary    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  experiments Experiment[]
+}
+
+/// Experiment log: every proof verification run or benchmark run.
+model Experiment {
+  id             String   @id @default(cuid())
+  runAt          DateTime @default(now())
+  seed           Int
+  candidateCount Int
+  capacity       Int?
+  theorem        String?
+  passed         Boolean
+  violationCount Int
+  durationMs     Int
+  metadataJson   String?
+  gitCommit      String?
+
+  evidence   Evidence? @relation(fields: [evidenceId], references: [id])
+  evidenceId String?
+}
+
+/// Optimization run audit log: inputs, outputs, and solver versions.
+model OptimizationRun {
+  id                 String   @id @default(cuid())
+  runAt              DateTime @default(now())
+  inputHash          String
+  outputHash         String
+  solverVersion      String
+  calibrationVersion String?
+  strategyVersion    String?
+  gitCommit          String?
+  logPath            String?
+}

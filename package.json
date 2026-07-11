@@ -18,9 +18,14 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "verify:proofs": "npm run build && node dist/tools/runProofVerification.js",
     "verify:architecture": "node tools/architecture-guard.mjs",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
@@ -40,5 +45,13 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "@prisma/adapter-libsql": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "better-sqlite3": "^12.11.1",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.8.0",
+    "prisma-adapter-sqlite": "^1.0.0"
   }
 }

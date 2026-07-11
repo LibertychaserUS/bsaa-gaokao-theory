@@ -20,7 +20,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
-    "exactOptionalPropertyTypes": true,
+
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "declaration": true,
