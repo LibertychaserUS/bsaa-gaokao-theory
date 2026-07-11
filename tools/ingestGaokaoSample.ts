@@ -239,6 +239,8 @@ interface IngestResult {
     selectedIds: string[];
     order: string[];
     utility: number;
+    safety: number;
+    neutralQuality: number;
   };
 }
 
@@ -281,6 +283,8 @@ function main(): void {
       selectedIds: baselineIds,
       order: baselineIds,
       utility: evaluateSequence(baselineIds, candidates, PREFERENCE_PI),
+      safety: safetyProbability(baselineIds, candidates),
+      neutralQuality: neutralQuality(baselineIds, candidates, PREFERENCE_PI),
     },
   };
 
