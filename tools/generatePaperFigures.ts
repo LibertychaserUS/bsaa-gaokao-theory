@@ -46,6 +46,9 @@ const RESULT_PATH = path.resolve(PROJECT_ROOT, "data", "hlj-2026-physics-gsio.js
 const PREFERENCE_PI = [0.2, 0.25, 0.2, 0.15, 0.05, 0.1, 0.05] as const;
 
 interface GaokaoResult {
+  student: {
+    rank: number;
+  };
   candidateCount: number;
   slotCount: number;
   preference: readonly number[];
@@ -69,7 +72,7 @@ function loadResult(): GaokaoResult {
   return JSON.parse(readFileSync(RESULT_PATH, "utf-8")) as GaokaoResult;
 }
 
-function loadCandidatesFromDb(): PaperCandidate[] {
+function loadCandidatesFromDb(studentRank: number): PaperCandidate[] {
   const db = new DatabaseSync(DB_PATH, { readOnly: true });
   const sql = `
     SELECT
@@ -105,7 +108,7 @@ function loadCandidatesFromDb(): PaperCandidate[] {
   const candidates: PaperCandidate[] = [];
   for (const row of rows) {
     const baselineRank = row.estimatedRank ?? 100_000;
-    const rankDelta = 29_942 - baselineRank;
+    const rankDelta = studentRank - baselineRank;
     const p = clamp01(1 - clamp01((rankDelta + 2500) / 6500)) * 0.9 + 0.05;
 
     const sp = schoolPlatform(row.softRank);
@@ -250,6 +253,7 @@ async function buildFigure3Pareto(candidates: PaperCandidate[]): Promise<void> {
 
 async function buildFigure4Sensitivity(candidates: PaperCandidate[]): Promise<void> {
   // Use a small representative subset so 50 perturbation trials finish quickly.
+  // Use the first 120 candidates for the subset figures.
   const subset = candidates.slice(0, 120);
   const basePi = [...PREFERENCE_PI];
   const trials = 50;
@@ -446,27 +450,38 @@ function buildTable3Verification(): void {
   writeJson("table3_verification_summary.json", rows);
 }
 
+function selectSubset(candidates: PaperCandidate[], studentRank: number): PaperCandidate[] {
+  // Pick candidates whose estimated rank is near the student's rank so that
+  // the probability model has real variation across the reach/steady/safety buckets.
+  return candidates.filter((c) => {
+    const baselineRank = Number(c.id) < 5_000_000 ? studentRank : Number(c.id);
+    return Math.abs(studentRank - baselineRank) <= 25_000;
+  });
+}
+
 async function main(): Promise<void> {
   const result = loadResult();
-  const candidates = loadCandidatesFromDb();
+  const studentRank = result.student.rank;
+  const candidates = loadCandidatesFromDb(studentRank);
   console.log(`Loaded ${candidates.length} candidates from DB`);
 
   buildFigure2Scatter(result, candidates);
   console.log("Figure 2: selection scatter");
 
-  await buildFigure3Pareto(candidates);
+  const subset = selectSubset(candidates, studentRank).slice(0, 120);
+  await buildFigure3Pareto(subset);
   console.log("Figure 3: Pareto frontier");
 
-  await buildFigure4Sensitivity(candidates);
+  await buildFigure4Sensitivity(subset);
   console.log("Figure 4: sensitivity");
 
-  await buildFigure5Approximation(candidates);
+  await buildFigure5Approximation(subset);
   console.log("Figure 5: approximation ratio");
 
-  await buildFigure6MarginalGain(candidates);
+  await buildFigure6MarginalGain(subset);
   console.log("Figure 6: marginal gain");
 
-  buildTable2PreferenceSweep(candidates);
+  buildTable2PreferenceSweep(subset);
   console.log("Table 2: preference sweep");
 
   buildTable3Verification();

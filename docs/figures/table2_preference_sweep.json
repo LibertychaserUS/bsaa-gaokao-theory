@@ -1,37 +1,37 @@
 [
   {
     "profile": "Balanced",
-    "utility": 0.7951,
+    "utility": 0.7121,
     "safety": 0.9006,
-    "neutralQuality": 0.887,
-    "gainOverBaseline": 21.8
+    "neutralQuality": 0.8931,
+    "gainOverBaseline": 5.9
   },
   {
     "profile": "School-first",
-    "utility": 0.8324,
+    "utility": 0.7819,
     "safety": 0.9006,
-    "neutralQuality": 0.8877,
-    "gainOverBaseline": 12.1
+    "neutralQuality": 0.8958,
+    "gainOverBaseline": 3.4
   },
   {
     "profile": "Major-first",
-    "utility": 0.8011,
+    "utility": 0.6772,
     "safety": 0.9006,
-    "neutralQuality": 0.8855,
-    "gainOverBaseline": 37.1
+    "neutralQuality": 0.8454,
+    "gainOverBaseline": 11.2
   },
   {
     "profile": "Region-first",
-    "utility": 0.7884,
+    "utility": 0.7257,
     "safety": 0.9006,
-    "neutralQuality": 0.8855,
-    "gainOverBaseline": 32.8
+    "neutralQuality": 0.7248,
+    "gainOverBaseline": 15.4
   },
   {
     "profile": "Safety-first",
-    "utility": 0.8417,
+    "utility": 0.8273,
     "safety": 0.9006,
-    "neutralQuality": 0.8689,
-    "gainOverBaseline": 3.8
+    "neutralQuality": 0.8949,
+    "gainOverBaseline": 1
   }
 ]

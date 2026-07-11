@@ -41,8 +41,8 @@ const STUDENT: {
 } = {
   province: "黑龙江",
   subjectType: "物理",
-  score: 498,
-  rank: 29942,
+  score: 600,
+  rank: 6580,
   subjects: ["物理", "化学"],
   preferredRegions: ["青岛", "威海", "南京", "厦门", "江苏", "浙江", "上海", "山东", "福建"],
   preferredMajorKeywords: [

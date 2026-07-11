@@ -17,3 +17,28 @@ coverage/
 /data/gaokao.bsaa.sqlite
 
 /generated/prisma
+
+# Temporary/local TeX distribution
+.bin/
+
+# LaTeX build artifacts (kept in docs/)
+*.aux
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# Algorithmic/style bundle extras we do not use
+docs/algc.sty
+docs/algcompatible.sty
+docs/algmatlab.sty
+docs/algpascal.sty
+docs/multirow.sty
+docs/*.zip
+docs/latex-*/
+docs/references.bib.bak
+
+# Auto-generated screenshot previews
+docs/paper_*.png

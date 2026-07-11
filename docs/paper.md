@@ -2,7 +2,7 @@
 
 **Abstract**
 
-Gaokao (China's National College Entrance Examination) volunteer filling is a high-stakes sequential decision problem under uncertainty. Once admitted by an earlier choice, later choices become invalid, and candidates must commit to an ordered list before knowing the realized admission thresholds. We formalize this task as **Bayesian Sequential Assignment with Absorption (BSAA)** and show that, under mild axioms, the problem admits a clean structural characterization: (1) for any fixed candidate set the optimal ordering is independent of admission probabilities and follows a **Value-Index** rule; (2) the induced set function is monotone submodular; and (3) a greedy submodular optimizer with internal ordering (GSIO) yields a $(1-1/e)$ approximation guarantee. We further prove that the greedy output is piecewise constant on the preference simplex with a polynomial number of regions, enabling interactive Pareto-frontier exploration. Using a real 2026 Heilongjiang physics-track dataset with 1,957 eligible programs, GSIO improves expected path utility by $24.3\%$ over the transparent 冲/稳/保 baseline while maintaining comparable admission safety. All theorems are computer-verified and the artifacts are publicly reproducible.
+Gaokao (China's National College Entrance Examination) volunteer filling is a high-stakes sequential decision problem under uncertainty. Once admitted by an earlier choice, later choices become invalid, and candidates must commit to an ordered list before knowing the realized admission thresholds. We formalize this task as **Bayesian Sequential Assignment with Absorption (BSAA)** and show that, under mild axioms, the problem admits a clean structural characterization: (1) for any fixed candidate set the optimal ordering is independent of admission probabilities and follows a **Value-Index** rule; (2) the induced set function is monotone submodular; and (3) a greedy submodular optimizer with internal ordering (GSIO) yields a $(1-1/e)$ approximation guarantee. We further prove that the greedy output is piecewise constant on the preference simplex with a polynomial number of regions, enabling interactive Pareto-frontier exploration. Using a real 2026 Heilongjiang physics-track dataset with 1,957 eligible programs, GSIO improves expected path utility by $22.5\%$ over the transparent 冲/稳/保 baseline while maintaining comparable admission safety. All theorems are computer-verified and the artifacts are publicly reproducible.
 
 ---
 
@@ -164,7 +164,7 @@ This polynomial bound justifies interactive tools where students drag preference
 
 ### 5.1 Dataset
 
-We use a real 2026 Heilongjiang physics-track Gaokao dataset containing 490,344 program records across 20 provinces. After staging the official major catalog mapping and filtering by province, subject type, and batch, we obtain 1,957 eligible programs for a student with score 498 and rank 29,942 (rank percentile 27.3%). The one-point-segment table reports 109,811 total ranked students.
+We use a real 2026 Heilongjiang physics-track Gaokao dataset containing 490,344 program records across 20 provinces. After staging the official major catalog mapping and filtering by province, subject type, and batch, we obtain 1,957 eligible programs for a student with score 600 and rank 6,580 (rank percentile 6.0\%). The one-point-segment table reports 109,811 total ranked students.
 
 ### 5.2 Baselines and metrics
 
@@ -182,10 +182,10 @@ Table 1 summarizes the optimized 45-slot plan.
 
 | Method | Expected utility | Safety | Neutral quality |
 |---|---|---|---|
-| GSIO | **0.8215** | 0.9006 | 0.8833 |
-| 冲/稳/保 baseline | 0.6610 | 0.9006 | 0.8994 |
+| GSIO | **0.9146** | 1.0000 | 0.9917 |
+| 冲/稳/保 baseline | 0.7464 | 1.0000 | 0.9987 |
 
-*Table 1: Comparison on the HLJ 2026 physics sample (1,957 eligible candidates, 45 slots). GSIO improves expected path utility by 24.3% over the transparent baseline while matching its admission safety. Baseline neutral quality is slightly higher because it prioritizes school platform, whereas GSIO optimizes the full multi-attribute path utility.*
+*Table 1: Comparison on the HLJ 2026 physics sample (1,957 eligible candidates, 45 slots). GSIO improves expected path utility by 22.5% over the transparent baseline while matching its admission safety. Baseline neutral quality is slightly higher because it prioritizes school platform, whereas GSIO optimizes the full multi-attribute path utility.*
 
 We also verify the theorem chain empirically on small random instances: Value-Index optimality, submodularity, and the $(1-1/e)$ greedy lower bound all hold in 15/15 verification trials.
 
@@ -211,7 +211,7 @@ The reported utility gain is robust to moderate perturbations of the preference 
 
 *Figure 4: Sensitivity of utility and safety to preference perturbations (50 trials).*
 
-The reported utility gain is robust to moderate perturbations of the preference vector: random perturbations of $\pm 5\%$ on each coordinate (renormalized to the simplex) change expected utility by less than $3\%$ in 95% of trials. Safety remains above $0.88$ across all perturbations, indicating that the optimization does not sacrifice admission reliability for utility.
+The reported utility gain is robust to moderate perturbations of the preference vector: random perturbations of $\pm 5\%$ on each coordinate (renormalized to the simplex) change expected utility by less than $3\%$ in 95\% of trials. Safety remains above $0.88$ across all perturbations, indicating that the optimization does not sacrifice admission reliability for utility.
 
 ---
 
@@ -243,11 +243,11 @@ Future work includes:
 
 | Preference profile | Utility | Safety | Neutral quality | Gain over baseline |
 |---|---:|---:|---:|---:|
-| Balanced | 0.7951 | 0.9006 | 0.8870 | 21.8% |
-| School-first | 0.8324 | 0.9006 | 0.8877 | 12.1% |
-| Major-first | 0.8011 | 0.9006 | 0.8855 | 37.1% |
-| Region-first | 0.7884 | 0.9006 | 0.8855 | 32.8% |
-| Safety-first | 0.8417 | 0.9006 | 0.8689 | 3.8% |
+| Balanced | 0.7121 | 0.9006 | 0.8931 | 5.9% |
+| School-first | 0.7819 | 0.9006 | 0.8958 | 3.4% |
+| Major-first | 0.6772 | 0.9006 | 0.8454 | 11.2% |
+| Region-first | 0.7257 | 0.9006 | 0.7248 | 15.4% |
+| Safety-first | 0.8273 | 0.9006 | 0.8949 | 1.0% |
 
 *Table 2: GSIO under five preference profiles (120-candidate subset, 12 slots). Safety is identical because all profiles retain the same safety-net programs.*
 
