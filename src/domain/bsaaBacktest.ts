@@ -1,15 +1,23 @@
 /**
  * BSAA (Bayesian Sequential Assignment with Absorption) backtesting engine.
  *
- * Implements the theoretical objects defined in `theory_framework.md`:
- *   - expected utility U(x; π) under sequential absorption
- *   - Value-Index optimal ordering (Theorem 3.1)
- *   - monotone submodular set function f_π(S) (Theorem 4.2)
- *   - GSIO greedy submodular optimizer (Algorithm 1)
- *   - transparent 冲/稳/保 baseline (Section 8.1)
- *   - Monte Carlo virtual-student evaluation (Section 8.3)
- *   - brute-force verification helpers (proof_check_manual.md)
+ * Implements the Monte-Carlo evaluation pipeline from `theory_framework.md` §8.
+ * Core optimization algorithms are delegated to `paperTheory.ts`, which is the
+ * paper-official single source of truth for Value-Index, submodularity, GSIO,
+ * and brute-force verification.
  */
+
+import {
+  bruteForceOptimal as paperBruteForceOptimal,
+  evaluateSequence as paperEvaluateSequence,
+  greedySubmodularOptimization as paperGreedySubmodularOptimization,
+  marginalGain as paperMarginalGain,
+  optimalOrderForSet as paperOptimalOrderForSet,
+  setFunctionValue as paperSetFunctionValue,
+  verifySubmodularity as paperVerifySubmodularity,
+  verifyValueIndexTheorem as paperVerifyValueIndexTheorem,
+  type PaperCandidate,
+} from "./paperTheory.js";
 
 export interface BsaaCandidate {
   readonly id: string;
@@ -90,6 +98,7 @@ export interface BsaaRelativeAverages {
 }
 
 const TOLERANCE = 1e-9;
+const SINGLE_OBJECTIVE_PI: readonly number[] = [1];
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
@@ -178,6 +187,34 @@ function randomUnitVector(rng: () => number, dim: number): number[] {
   return l1Normalize(Array.from({ length: dim }, () => rng()));
 }
 
+function toPaperCandidate(candidate: BsaaScoredCandidate): PaperCandidate {
+  return {
+    id: candidate.id,
+    probability: candidate.p,
+    prototypeValues: [candidate.v],
+    qualityScore: candidate.q,
+    tierScore: candidate.schoolTier,
+  };
+}
+
+function toPaperCandidates(candidates: readonly BsaaScoredCandidate[]): PaperCandidate[] {
+  return candidates.map(toPaperCandidate);
+}
+
+function orderFromPaperIds(
+  ids: readonly string[],
+  source: readonly BsaaScoredCandidate[],
+): BsaaScoredCandidate[] {
+  const byId = new Map(source.map((c) => [c.id, c]));
+  return ids.map((id) => {
+    const candidate = byId.get(id);
+    if (candidate === undefined) {
+      throw new RangeError(`Candidate ${id} not found in source pool.`);
+    }
+    return candidate;
+  });
+}
+
 export function scoreCandidates(
   candidates: readonly BsaaCandidate[],
   preference: BsaaPreferenceProfile,
@@ -198,79 +235,51 @@ export function scoreCandidates(
 
 /** Expected utility U(x; π) for an already ordered list of scored candidates. */
 export function expectedUtility(order: readonly BsaaScoredCandidate[]): number {
-  let total = 0;
-  let survival = 1;
-  for (const candidate of order) {
-    total += candidate.v * candidate.p * survival;
-    survival *= 1 - candidate.p;
-  }
-  return total;
+  const paperCandidates = toPaperCandidates(order);
+  const ids = paperCandidates.map((c) => c.id);
+  return paperEvaluateSequence(ids, paperCandidates, SINGLE_OBJECTIVE_PI);
 }
 
 /** Value-Index theorem (Theorem 3.1): sort by v_c(π) descending. */
 export function valueIndexOrder(candidates: readonly BsaaScoredCandidate[]): BsaaScoredCandidate[] {
-  return [...candidates].sort((left, right) => right.v - left.v || left.id.localeCompare(right.id));
+  const paperCandidates = toPaperCandidates(candidates);
+  const ids = paperCandidates.map((c) => c.id);
+  const orderedIds = paperOptimalOrderForSet(ids, paperCandidates, SINGLE_OBJECTIVE_PI);
+  return orderFromPaperIds(orderedIds, candidates);
 }
 
 /** f_π(S): best ordering of S, which is the v-descending order. */
 export function fPi(candidates: readonly BsaaScoredCandidate[]): number {
-  return expectedUtility(valueIndexOrder(candidates));
-}
-
-function insertByValue(
-  sorted: readonly BsaaScoredCandidate[],
-  candidate: BsaaScoredCandidate,
-): BsaaScoredCandidate[] {
-  const copy = [...sorted];
-  let index = 0;
-  while (index < copy.length && copy[index].v >= candidate.v) {
-    index += 1;
-  }
-  copy.splice(index, 0, candidate);
-  return copy;
+  const paperCandidates = toPaperCandidates(candidates);
+  const ids = paperCandidates.map((c) => c.id);
+  return paperSetFunctionValue(ids, paperCandidates, SINGLE_OBJECTIVE_PI);
 }
 
 export function marginalGain(
   sortedSet: readonly BsaaScoredCandidate[],
   candidate: BsaaScoredCandidate,
 ): number {
-  return fPi(insertByValue(sortedSet, candidate)) - fPi(sortedSet);
+  const setPaper = toPaperCandidates(sortedSet);
+  const elementPaper = toPaperCandidate(candidate);
+  return paperMarginalGain(
+    setPaper.map((c) => c.id),
+    elementPaper.id,
+    [...setPaper, elementPaper],
+    SINGLE_OBJECTIVE_PI,
+  );
 }
 
 /**
  * GSIO (Greedy Submodular with Internal Ordering) from Algorithm 1.
- * Complexity O(n^2 N) because each marginal gain is computed by inserting into the
- * v-sorted list in O(|S|) time.
+ * Delegates to `paperTheory.ts` for the paper-official implementation.
  */
 export function greedySubmodularOptimizer(
   candidates: readonly BsaaScoredCandidate[],
   slotCount: number,
 ): BsaaScoredCandidate[] {
-  const n = Math.min(slotCount, candidates.length);
-  const selected: BsaaScoredCandidate[] = [];
-  const selectedIds = new Set<string>();
-
-  for (let i = 0; i < n; i += 1) {
-    let best: BsaaScoredCandidate | null = null;
-    let bestGain = -Infinity;
-    for (const candidate of candidates) {
-      if (selectedIds.has(candidate.id)) continue;
-      const gain = marginalGain(selected, candidate);
-      if (
-        gain > bestGain + TOLERANCE ||
-        (Math.abs(gain - bestGain) <= TOLERANCE &&
-          (best === null || candidate.id.localeCompare(best.id) < 0))
-      ) {
-        bestGain = gain;
-        best = candidate;
-      }
-    }
-    if (best === null) break;
-    selected.push(best);
-    selectedIds.add(best.id);
-  }
-
-  return valueIndexOrder(selected);
+  const paperCandidates = toPaperCandidates(candidates);
+  const result = paperGreedySubmodularOptimization(paperCandidates, slotCount, SINGLE_OBJECTIVE_PI);
+  return orderFromPaperIds(result.order, candidates);
 }
 
 /** Transparent 冲/稳/保 baseline from Section 8.1.
@@ -339,64 +348,21 @@ export function bruteForceOptimal(
   candidates: readonly BsaaScoredCandidate[],
   slotCount: number,
 ): { readonly order: readonly BsaaScoredCandidate[]; readonly value: number } {
-  const n = Math.min(slotCount, candidates.length);
-  const N = candidates.length;
-  let bestValue = -Infinity;
-  let bestOrder: BsaaScoredCandidate[] = [];
-
-  function permute(current: BsaaScoredCandidate[], remaining: BsaaScoredCandidate[]): void {
-    if (current.length === n) {
-      const value = expectedUtility(current);
-      if (value > bestValue + TOLERANCE) {
-        bestValue = value;
-        bestOrder = [...current];
-      }
-      return;
-    }
-    for (let i = 0; i < remaining.length; i += 1) {
-      current.push(remaining[i]);
-      permute(current, remaining.slice(0, i).concat(remaining.slice(i + 1)));
-      current.pop();
-    }
-  }
-
-  function choose(start: number, current: BsaaScoredCandidate[]): void {
-    if (current.length === n) {
-      permute([], current);
-      return;
-    }
-    for (let i = start; i <= N - (n - current.length); i += 1) {
-      current.push(candidates[i]);
-      choose(i + 1, current);
-      current.pop();
-    }
-  }
-
-  choose(0, []);
-  return { order: bestOrder, value: bestValue };
+  const paperCandidates = toPaperCandidates(candidates);
+  const result = paperBruteForceOptimal(paperCandidates, slotCount, SINGLE_OBJECTIVE_PI);
+  return {
+    order: orderFromPaperIds(result.order, candidates),
+    value: result.utility,
+  };
 }
 
 /** Verifies Theorem 3.1: for the full candidate set, v-descending order is optimal. */
 export function verifyValueIndexTheorem(candidates: readonly BsaaScoredCandidate[]): {
   readonly ok: boolean;
 } {
-  const bestOrder = valueIndexOrder(candidates);
-  const bestValue = expectedUtility(bestOrder);
-
-  function permute(current: BsaaScoredCandidate[], remaining: BsaaScoredCandidate[]): boolean {
-    if (remaining.length === 0) {
-      return expectedUtility(current) <= bestValue + TOLERANCE;
-    }
-    for (let i = 0; i < remaining.length; i += 1) {
-      current.push(remaining[i]);
-      const ok = permute(current, remaining.slice(0, i).concat(remaining.slice(i + 1)));
-      current.pop();
-      if (!ok) return false;
-    }
-    return true;
-  }
-
-  return { ok: permute([], [...candidates]) };
+  const paperCandidates = toPaperCandidates(candidates);
+  const result = paperVerifyValueIndexTheorem(paperCandidates, SINGLE_OBJECTIVE_PI);
+  return { ok: result.ok };
 }
 
 /** Verifies Theorem 4.2: f_π is monotone submodular on all A ⊆ B. */
@@ -404,45 +370,9 @@ export function verifySubmodularity(candidates: readonly BsaaScoredCandidate[]):
   readonly ok: boolean;
   readonly counterexample?: unknown;
 } {
-  const N = candidates.length;
-  if (N > 8) {
-    throw new RangeError(
-      "Submodularity verification is limited to N ≤ 8 to avoid exponential blowup.",
-    );
-  }
-
-  function f(mask: number): number {
-    const set: BsaaScoredCandidate[] = [];
-    for (let i = 0; i < N; i += 1) {
-      if (mask & (1 << i)) set.push(candidates[i]);
-    }
-    return fPi(set);
-  }
-
-  for (let b = 0; b < 1 << N; b += 1) {
-    for (let a = b & (b - 1); ; a = (a - 1) & b) {
-      // a iterates over all subsets of b including 0
-      for (let e = 0; e < N; e += 1) {
-        if (b & (1 << e)) continue;
-        const gainA = f(a | (1 << e)) - f(a);
-        const gainB = f(b | (1 << e)) - f(b);
-        if (gainA < gainB - TOLERANCE) {
-          return {
-            ok: false,
-            counterexample: {
-              A: candidates.filter((_, i) => a & (1 << i)).map((c) => c.id),
-              B: candidates.filter((_, i) => b & (1 << i)).map((c) => c.id),
-              e: candidates[e].id,
-              gainA,
-              gainB,
-            },
-          };
-        }
-      }
-      if (a === 0) break;
-    }
-  }
-  return { ok: true };
+  const paperCandidates = toPaperCandidates(candidates);
+  const result = paperVerifySubmodularity(paperCandidates, SINGLE_OBJECTIVE_PI);
+  return { ok: result.ok };
 }
 
 function generatePrototypes(

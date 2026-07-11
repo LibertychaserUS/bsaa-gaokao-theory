@@ -371,10 +371,10 @@ export function verifySubmodularity(
 ): VerificationResult<{ A: string[]; B: string[]; e: string; gainA: number; gainB: number }> {
   assertValidCandidates(candidates);
   assertValidPreference(pi, candidates[0].prototypeValues.length);
-  if (candidates.length > 6) {
+  if (candidates.length > 8) {
     return {
       ok: false,
-      message: "Too many candidates for exhaustive submodularity verification (max 6).",
+      message: "Too many candidates for exhaustive submodularity verification (max 8).",
     };
   }
 
