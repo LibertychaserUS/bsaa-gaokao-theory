@@ -7,65 +7,100 @@
     "values": [
       {
         "index": 0,
-        "objective0": 0.2611645079503457,
+        "objective0": 0.305295538783679,
         "objective1": 0.2006315303808105,
         "objective2": 0.3531114934702265,
         "selectedCount": 10
       },
       {
         "index": 1,
+        "objective0": 0.32578308599201233,
+        "objective1": 0.22163153038081052,
+        "objective2": 0.34302750291463274,
+        "selectedCount": 10
+      },
+      {
+        "index": 2,
+        "objective0": 0.3262107443253457,
+        "objective1": 0.31189293631831044,
+        "objective2": 0.2840653140265078,
+        "selectedCount": 10
+      },
+      {
+        "index": 3,
         "objective0": 0.3648488038235748,
         "objective1": 0.2006315303808105,
         "objective2": 0.3531114934702265,
         "selectedCount": 10
       },
       {
-        "index": 2,
-        "objective0": 0.3996600096396771,
-        "objective1": 0.2605340303808105,
-        "objective2": 0.32123937927650775,
-        "selectedCount": 10
-      },
-      {
-        "index": 3,
-        "objective0": 0.346682022843054,
-        "objective1": 0.31189293631831044,
-        "objective2": 0.2840653140265078,
-        "selectedCount": 10
-      },
-      {
         "index": 4,
-        "objective0": 0.3467336082388874,
-        "objective1": 0.31189293631831044,
-        "objective2": 0.2247073140265078,
-        "selectedCount": 10
-      },
-      {
-        "index": 5,
-        "objective0": 0.39979269372593496,
+        "objective0": 0.39945598261160425,
         "objective1": 0.24158153038081048,
         "objective2": 0.33241277601400776,
         "selectedCount": 10
       },
       {
+        "index": 5,
+        "objective0": 0.345891115839929,
+        "objective1": 0.31189293631831044,
+        "objective2": 0.2840653140265078,
+        "selectedCount": 10
+      },
+      {
         "index": 6,
-        "objective0": 0.3999187436078799,
+        "objective0": 0.3466304374472207,
+        "objective1": 0.31189293631831044,
+        "objective2": 0.2407073140265078,
+        "selectedCount": 10
+      },
+      {
+        "index": 7,
+        "objective0": 0.3995102830282709,
         "objective1": 0.2605340303808105,
         "objective2": 0.32123937927650775,
         "selectedCount": 10
       },
       {
-        "index": 7,
-        "objective0": 0.40043392695606744,
-        "objective1": 0.2605340303808105,
-        "objective2": 0.2247073140265078,
+        "index": 8,
+        "objective0": 0.36453588338294984,
+        "objective1": 0.29564353663081044,
+        "objective2": 0.29709741402650774,
         "selectedCount": 10
       },
       {
-        "index": 8,
-        "objective0": 0.4007280433472723,
-        "objective1": 0.24158153038081048,
-        "objective2": 0.2407073140265078,
+        "index": 9,
+        "objective0": 0.39979269372593496,
+        "objective1": 0.2006315303808105,
+        "objective2": 0.33241277601400776,
+        "selectedCount": 10
+      },
+      {
+        "index": 10,
+        "objective0": 0.3995102830282709,
+        "objective1": 0.2605340303808105,
+        "objective2": 0.29709741402650774,
+        "selectedCount": 10
+      },
+      {
+        "index": 11,
+        "objective0": 0.3998671582120466,
+        "objective1": 0.2605340303808105,
+        "objective2": 0.2840653140265078,
+        "selectedCount": 10
+      },
+      {
+        "index": 12,
+        "objective0": 0.3997411083301017,
+        "objective1": 0.2006315303808105,
+        "objective2": 0.32123937927650775,
+        "selectedCount": 10
+      },
+      {
+        "index": 13,
+        "objective0": 0.39940168219493755,
+        "objective1": 0.22163153038081052,
+        "objective2": 0.29709741402650774,
         "selectedCount": 10
       }
     ]

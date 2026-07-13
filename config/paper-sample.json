@@ -1,0 +1,97 @@
+{
+  "$schema": "./paper-sample.schema.json",
+  "comment": "Paper-official input configuration for the HLJ 2026 physics sample. All hardcoded scoring constants live here so the computation code stays pure.",
+  "student": {
+    "province": "黑龙江",
+    "subjectType": "物理",
+    "score": 600,
+    "rank": 6580,
+    "subjects": ["物理", "化学"],
+    "preferredRegions": ["青岛", "威海", "南京", "厦门", "江苏", "浙江", "上海", "山东", "福建"],
+    "preferredMajorKeywords": [
+      "智能制造工程",
+      "大数据",
+      "电子信息工程",
+      "机械设计制造",
+      "计算机",
+      "机械",
+      "电气"
+    ]
+  },
+  "dataPaths": {
+    "db": "data/gaokao.bsaa.sqlite",
+    "onePointSegment": "data/hlj_2026_physics_one_point_segment.csv"
+  },
+  "optimization": {
+    "batch": "本科批",
+    "slotCount": 45,
+    "preferencePi": [0.2, 0.25, 0.2, 0.15, 0.05, 0.1, 0.05]
+  },
+  "probabilityModel": {
+    "offset": 2500,
+    "scale": 6500,
+    "outputRange": [0.05, 0.95]
+  },
+  "attributeScoring": {
+    "regionMatchScore": 0.88,
+    "regionMismatchScore": 0.56,
+    "majorMatchScore": 0.92,
+    "majorCategoryScore": 0.7,
+    "majorMismatchScore": 0.5,
+    "defaultSchoolPlatform": 0.46,
+    "schoolPlatformMaxRank": 600,
+    "schoolPlatformDivisor": 750,
+    "dataConfidence": 0.85,
+    "costFitThreshold": 9000,
+    "costFitMatch": 0.88,
+    "costFitMismatch": 0.6,
+    "majorTrunkByNodeLevel": {
+      "major": 0.9,
+      "category": 0.75,
+      "default": 0.6
+    },
+    "majorSupplySafetyDivisor": 100
+  },
+  "subset": {
+    "rankWindow": 25000,
+    "size": 120
+  },
+  "figures": {
+    "pareto": {
+      "dimensions": 3,
+      "gridSteps": 8,
+      "fixedTail": [0.15, 0.05, 0.1, 0.05],
+      "capacity": 10,
+      "candidateCount": 80
+    },
+    "sensitivity": {
+      "trials": 50,
+      "perturbation": 0.1,
+      "capacity": 12,
+      "seed": 20260711
+    },
+    "approximation": {
+      "Ns": [4, 5, 6, 7, 8],
+      "trialsPerN": 10,
+      "seed": 20260711
+    },
+    "marginalGain": {
+      "candidateCount": 80,
+      "capacity": 20
+    },
+    "preferenceSweep": {
+      "capacity": 45
+    },
+    "preferenceSweepProfiles": [
+      { "name": "Balanced", "pi": [0.2, 0.25, 0.2, 0.15, 0.05, 0.1, 0.05] },
+      { "name": "School-first", "pi": [0.5, 0.15, 0.15, 0.1, 0.02, 0.05, 0.03] },
+      { "name": "Major-first", "pi": [0.1, 0.5, 0.15, 0.1, 0.02, 0.08, 0.05] },
+      { "name": "Region-first", "pi": [0.1, 0.15, 0.5, 0.1, 0.02, 0.08, 0.05] },
+      { "name": "Safety-first", "pi": [0.05, 0.05, 0.05, 0.1, 0.05, 0.05, 0.65] }
+    ],
+    "verification": {
+      "seed": 20260711,
+      "trials": 100
+    }
+  }
+}

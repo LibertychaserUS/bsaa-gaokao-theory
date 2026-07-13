@@ -2,21 +2,23 @@
  * Generate figures, tables, and chart data for the BSAA/GSIO paper.
  *
  * Reads:
- *   - data/hlj-2026-physics-gsio.json  (GSIO and baseline outputs)
- *   - data/gaokao.bsaa.sqlite          (program metadata)
+ *   - config/paper-sample.json            (student profile + scoring constants)
+ *   - data/gaokao.bsaa.sqlite             (program metadata)
+ *   - data/hlj-2026-physics-gsio.json     (GSIO and baseline outputs)
  *
  * Writes to docs/figures/:
- *   - fig2_selection_scatter.json      Vega-Lite spec + embedded data
- *   - fig3_pareto_frontier.json
- *   - fig4_sensitivity_boxplot.json
- *   - fig5_approximation_ratio.json
- *   - fig6_marginal_gain.json
- *   - table2_preference_sweep.json     tabular data
- *   - table3_verification_summary.json tabular data
- *   - *.svg                            rendered figures
+ *   - fig2_selection_scatter.{vl.json,svg,data.json}
+ *   - fig3_pareto_frontier.{vl.json,svg,data.json}
+ *   - fig4_sensitivity.{vl.json,svg,data.json}
+ *   - fig5_approximation.{vl.json,svg,data.json}
+ *   - fig6_marginal_gain.{vl.json,svg,data.json}
+ *   - table2_preference_sweep.json
+ *   - table3_verification_summary.json
+ *
+ * Usage:
+ *   npx tsx tools/generatePaperFigures.ts --config config/paper-sample.json
  */
 
-import { DatabaseSync } from "node:sqlite";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -27,13 +29,19 @@ import {
   valueForPreference,
   evaluateSequence,
   safetyProbability,
+  neutralQuality,
   sampleSimplexWeights,
   buildParametricParetoFrontier,
   transparentBaselineSelection,
   verifyApproximationRatio,
   runPaperVerificationSuite,
-  type PaperCandidate,
 } from "../src/domain/paperTheory.js";
+import {
+  loadConfig,
+  buildCandidates,
+  selectRankSubset,
+  type ProjectedCandidate,
+} from "../src/infrastructure/candidateProjection.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,9 +49,15 @@ const PROJECT_ROOT = path.resolve(__dirname, "..");
 const FIGURES_DIR = path.resolve(PROJECT_ROOT, "docs", "figures");
 mkdirSync(FIGURES_DIR, { recursive: true });
 
-const DB_PATH = path.resolve(PROJECT_ROOT, "data", "gaokao.bsaa.sqlite");
 const RESULT_PATH = path.resolve(PROJECT_ROOT, "data", "hlj-2026-physics-gsio.json");
-const PREFERENCE_PI = [0.2, 0.25, 0.2, 0.15, 0.05, 0.1, 0.05] as const;
+
+function parseArgs(argv: readonly string[]): { configPath: string } {
+  const flagIndex = argv.indexOf("--config");
+  if (flagIndex === -1 || flagIndex + 1 >= argv.length) {
+    return { configPath: "config/paper-sample.json" };
+  }
+  return { configPath: argv[flagIndex + 1] };
+}
 
 interface GaokaoResult {
   student: {
@@ -72,95 +86,12 @@ function loadResult(): GaokaoResult {
   return JSON.parse(readFileSync(RESULT_PATH, "utf-8")) as GaokaoResult;
 }
 
-function loadCandidatesFromDb(studentRank: number): PaperCandidate[] {
-  const db = new DatabaseSync(DB_PATH, { readOnly: true });
-  const sql = `
-    SELECT
-      p.id,
-      p.estimated_rank_2025 AS estimatedRank,
-      p.plan_2025 AS plan2025,
-      p.soft_rank AS softRank,
-      p.school_province AS schoolProvince,
-      p.city,
-      p.major_name AS majorName,
-      p.major_category AS majorCategory
-    FROM programs p
-    WHERE p.province = ?
-      AND p.subject_type = ?
-      AND p.batch = ?
-      AND p.plan_2025 IS NOT NULL
-      AND p.plan_2025 > 0
-    ORDER BY p.estimated_rank_2025 ASC
-    LIMIT 2000
-  `;
-  const rows = db.prepare(sql).all("黑龙江", "物理", "本科批") as {
-    id: number;
-    estimatedRank: number | null;
-    plan2025: number | null;
-    softRank: number | null;
-    schoolProvince: string | null;
-    city: string | null;
-    majorName: string | null;
-    majorCategory: string | null;
-  }[];
-  db.close();
-
-  const candidates: PaperCandidate[] = [];
-  for (const row of rows) {
-    const baselineRank = row.estimatedRank ?? 100_000;
-    const rankDelta = studentRank - baselineRank;
-    const p = clamp01(1 - clamp01((rankDelta + 2500) / 6500)) * 0.9 + 0.05;
-
-    const sp = schoolPlatform(row.softRank);
-    const mf = majorFit(row.majorName, row.majorCategory);
-    const rf = regionFit(row.schoolProvince, row.city);
-    const dc = 0.85;
-    const cf = row.plan2025 !== null && row.plan2025 <= 9000 ? 0.88 : 0.6;
-    const mt = 0.6;
-    const mss = clamp01(1 - (row.plan2025 ?? 1) / 100);
-
-    candidates.push({
-      id: String(row.id),
-      probability: p,
-      prototypeValues: [sp, mf, rf, dc, cf, mt, mss],
-      qualityScore: sp,
-      tierScore: sp,
-    });
-  }
-  return candidates;
-}
-
-function clamp01(value: number): number {
-  return Math.max(0, Math.min(1, value));
-}
-
-function schoolPlatform(softRank: number | null): number {
-  if (softRank === null) return 0.46;
-  return clamp01(1 - Math.min(softRank, 600) / 750);
-}
-
-const PREFERRED_REGIONS = ["青岛", "威海", "南京", "厦门", "江苏", "浙江", "上海", "山东", "福建"];
-const KEYWORDS = [
-  "智能制造工程",
-  "大数据",
-  "电子信息工程",
-  "机械设计制造",
-  "计算机",
-  "机械",
-  "电气",
-];
-
-function regionFit(schoolProvince: string | null, city: string | null): number {
-  const regionText = `${schoolProvince ?? ""} ${city ?? ""}`;
-  if (PREFERRED_REGIONS.some((region) => regionText.includes(region))) return 0.88;
-  return 0.56;
-}
-
-function majorFit(majorName: string | null, majorCategory: string | null): number {
-  const searchable = `${majorName ?? ""} ${majorCategory ?? ""}`;
-  if (KEYWORDS.some((keyword) => searchable.includes(keyword))) return 0.92;
-  if (KEYWORDS.some((keyword) => (majorCategory ?? "").includes(keyword))) return 0.7;
-  return 0.5;
+function lcg(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
 }
 
 async function renderVegaLite(spec: vegaLite.TopLevelSpec, outputPath: string): Promise<void> {
@@ -174,13 +105,14 @@ function writeJson(filename: string, data: unknown): void {
   writeFileSync(path.resolve(FIGURES_DIR, filename), JSON.stringify(data, null, 2));
 }
 
-function buildFigure2Scatter(result: GaokaoResult, candidates: PaperCandidate[]): void {
+function buildFigure2Scatter(result: GaokaoResult, candidates: ProjectedCandidate[]): void {
+  const pi = result.preference;
   const values: { probability: number; value: number; method: string; selected: boolean }[] = [];
 
   for (const candidate of candidates) {
     const inGsio = result.gsio.selectedIds.includes(candidate.id);
     const inBaseline = result.baseline.selectedIds.includes(candidate.id);
-    const value = valueForPreference(candidate, PREFERENCE_PI);
+    const value = valueForPreference(candidate, pi);
     values.push(
       { probability: candidate.probability, value, method: "GSIO", selected: inGsio },
       { probability: candidate.probability, value, method: "Baseline", selected: inBaseline },
@@ -208,20 +140,27 @@ function buildFigure2Scatter(result: GaokaoResult, candidates: PaperCandidate[])
   renderVegaLite(spec, path.resolve(FIGURES_DIR, "fig2_selection_scatter.svg"));
 }
 
-async function buildFigure3Pareto(candidates: PaperCandidate[]): Promise<void> {
-  // Map 3-dimensional simplex weights onto the 7-dimensional preference vector
-  // by varying only the first three coordinates and keeping the remaining four fixed.
-  const baseTail = [0.15, 0.05, 0.1, 0.05];
-  const headBudget = 1 - baseTail.reduce((a, b) => a + b, 0);
-  const simplexWeights = sampleSimplexWeights(3, 8).filter((w) => w[0] + w[1] + w[2] > 1e-6);
+async function buildFigure3Pareto(
+  candidates: ProjectedCandidate[],
+  config: ReturnType<typeof loadConfig>,
+): Promise<void> {
+  const pareto = config.figures.pareto;
+  const headBudget = 1 - pareto.fixedTail.reduce((a, b) => a + b, 0);
+  const simplexWeights = sampleSimplexWeights(pareto.dimensions, pareto.gridSteps).filter(
+    (w) => w.reduce((a, b) => a + b, 0) > 1e-6,
+  );
   const weights7d = simplexWeights.map((w) => {
-    const raw = [w[0] * headBudget, w[1] * headBudget, w[2] * headBudget, ...baseTail];
+    const raw = [w[0] * headBudget, w[1] * headBudget, w[2] * headBudget, ...pareto.fixedTail];
     const clamped = raw.map((x) => Math.max(0, x));
     const sum = clamped.reduce((a, b) => a + b, 0);
     return clamped.map((x) => x / sum);
   });
 
-  const { frontier } = buildParametricParetoFrontier(candidates.slice(0, 80), 10, weights7d);
+  const { frontier } = buildParametricParetoFrontier(
+    candidates.slice(0, pareto.candidateCount),
+    pareto.capacity,
+    weights7d,
+  );
 
   const values = frontier.map((point, index) => ({
     index,
@@ -251,30 +190,24 @@ async function buildFigure3Pareto(candidates: PaperCandidate[]): Promise<void> {
   await renderVegaLite(spec, path.resolve(FIGURES_DIR, "fig3_pareto_frontier.svg"));
 }
 
-async function buildFigure4Sensitivity(candidates: PaperCandidate[]): Promise<void> {
-  // Use a small representative subset so 50 perturbation trials finish quickly.
-  // Use the first 120 candidates for the subset figures.
-  const subset = candidates.slice(0, 120);
-  const basePi = [...PREFERENCE_PI];
-  const trials = 50;
+async function buildFigure4Sensitivity(
+  candidates: ProjectedCandidate[],
+  config: ReturnType<typeof loadConfig>,
+): Promise<void> {
+  const sensitivity = config.figures.sensitivity;
+  const basePi = [...config.optimization.preferencePi];
   const records: { metric: string; value: number }[] = [];
+  const random = lcg(sensitivity.seed);
 
-  function lcg(seed: number): () => number {
-    let state = seed >>> 0;
-    return () => {
-      state = (1664525 * state + 1013904223) >>> 0;
-      return state / 0x100000000;
-    };
-  }
-  const random = lcg(20260711);
-
-  for (let t = 0; t < trials; t += 1) {
-    const perturbed = basePi.map((w) => Math.max(0.01, w + (random() - 0.5) * 0.1));
+  for (let t = 0; t < sensitivity.trials; t += 1) {
+    const perturbed = basePi.map((w) =>
+      Math.max(0.01, w + (random() - 0.5) * sensitivity.perturbation),
+    );
     const sum = perturbed.reduce((a, b) => a + b, 0);
     const pi = perturbed.map((w) => w / sum);
-    const plan = greedySubmodularOptimization(subset, 12, pi);
+    const plan = greedySubmodularOptimization(candidates, sensitivity.capacity, pi);
     records.push({ metric: "Utility", value: plan.utility });
-    records.push({ metric: "Safety", value: safetyProbability(plan.order, subset) });
+    records.push({ metric: "Safety", value: safetyProbability(plan.order, candidates) });
   }
 
   writeJson("fig4_sensitivity_data.json", records);
@@ -296,21 +229,17 @@ async function buildFigure4Sensitivity(candidates: PaperCandidate[]): Promise<vo
   await renderVegaLite(spec, path.resolve(FIGURES_DIR, "fig4_sensitivity.svg"));
 }
 
-async function buildFigure5Approximation(_candidates: PaperCandidate[]): Promise<void> {
+async function buildFigure5Approximation(
+  _candidates: ProjectedCandidate[],
+  config: ReturnType<typeof loadConfig>,
+): Promise<void> {
+  const approx = config.figures.approximation;
   const records: { N: number; ratio: number; bound: number }[] = [];
   const bound = 1 - 1 / Math.E;
+  const random = lcg(approx.seed);
 
-  function lcg(seed: number): () => number {
-    let state = seed >>> 0;
-    return () => {
-      state = (1664525 * state + 1013904223) >>> 0;
-      return state / 0x100000000;
-    };
-  }
-  const random = lcg(20260711);
-
-  for (const N of [4, 5, 6, 7, 8]) {
-    for (let trial = 0; trial < 10; trial += 1) {
+  for (const N of approx.Ns) {
+    for (let trial = 0; trial < approx.trialsPerN; trial += 1) {
       const subset = Array.from({ length: N }, (_, i) => ({
         id: `c${trial}_${N}_${i}`,
         probability: random() * 0.9 + 0.05,
@@ -356,9 +285,14 @@ async function buildFigure5Approximation(_candidates: PaperCandidate[]): Promise
   await renderVegaLite(spec, path.resolve(FIGURES_DIR, "fig5_approximation.svg"));
 }
 
-async function buildFigure6MarginalGain(candidates: PaperCandidate[]): Promise<void> {
-  const subset = candidates.slice(0, 80);
-  const plan = greedySubmodularOptimization(subset, 20, PREFERENCE_PI);
+async function buildFigure6MarginalGain(
+  candidates: ProjectedCandidate[],
+  config: ReturnType<typeof loadConfig>,
+): Promise<void> {
+  const mg = config.figures.marginalGain;
+  const subset = candidates.slice(0, mg.candidateCount);
+  const pi = config.optimization.preferencePi;
+  const plan = greedySubmodularOptimization(subset, mg.capacity, pi);
   const gains = plan.trace
     .filter((line) => line.includes(":gain_"))
     .map((line, index) => {
@@ -384,26 +318,22 @@ async function buildFigure6MarginalGain(candidates: PaperCandidate[]): Promise<v
   await renderVegaLite(spec, path.resolve(FIGURES_DIR, "fig6_marginal_gain.svg"));
 }
 
-function buildTable2PreferenceSweep(candidates: PaperCandidate[]): void {
-  const profiles = [
-    { name: "Balanced", pi: [...PREFERENCE_PI] },
-    { name: "School-first", pi: [0.5, 0.15, 0.15, 0.1, 0.02, 0.05, 0.03] },
-    { name: "Major-first", pi: [0.1, 0.5, 0.15, 0.1, 0.02, 0.08, 0.05] },
-    { name: "Region-first", pi: [0.1, 0.15, 0.5, 0.1, 0.02, 0.08, 0.05] },
-    { name: "Safety-first", pi: [0.05, 0.05, 0.05, 0.1, 0.05, 0.05, 0.65] },
-  ];
+function buildTable2PreferenceSweep(
+  candidates: ProjectedCandidate[],
+  config: ReturnType<typeof loadConfig>,
+): void {
+  const capacity = config.figures.preferenceSweep.capacity;
+  const profiles = config.figures.preferenceSweepProfiles;
 
   const rows = profiles.map(({ name, pi }) => {
-    const plan = greedySubmodularOptimization(candidates, 45, pi);
-    const baselineIds = transparentBaselineSelection(candidates, 45);
+    const plan = greedySubmodularOptimization(candidates, capacity, pi);
+    const baselineIds = transparentBaselineSelection(candidates, capacity);
     const baselineUtility = evaluateSequence(baselineIds, candidates, pi);
     return {
       profile: name,
       utility: Number(plan.utility.toFixed(4)),
       safety: Number(safetyProbability(plan.order, candidates).toFixed(4)),
-      neutralQuality: Number(
-        evaluateSequence(plan.order, candidates, [1, 0, 0, 0, 0, 0, 0]).toFixed(4),
-      ),
+      neutralQuality: Number(neutralQuality(plan.order, candidates, pi).toFixed(4)),
       gainOverBaseline: Number(
         (((plan.utility - baselineUtility) / baselineUtility) * 100).toFixed(1),
       ),
@@ -413,8 +343,12 @@ function buildTable2PreferenceSweep(candidates: PaperCandidate[]): void {
   writeJson("table2_preference_sweep.json", rows);
 }
 
-function buildTable3Verification(): void {
-  const result = runPaperVerificationSuite({ seed: 20260711, trials: 100 });
+function buildTable3Verification(config: ReturnType<typeof loadConfig>): void {
+  const verification = config.figures.verification;
+  const result = runPaperVerificationSuite({
+    seed: verification.seed,
+    trials: verification.trials,
+  });
   const approx = verifyApproximationRatio(
     [
       { id: "a", probability: 0.9, prototypeValues: [10] },
@@ -450,41 +384,33 @@ function buildTable3Verification(): void {
   writeJson("table3_verification_summary.json", rows);
 }
 
-function selectSubset(candidates: PaperCandidate[], studentRank: number): PaperCandidate[] {
-  // Pick candidates whose estimated rank is near the student's rank so that
-  // the probability model has real variation across the reach/steady/safety buckets.
-  return candidates.filter((c) => {
-    const baselineRank = Number(c.id) < 5_000_000 ? studentRank : Number(c.id);
-    return Math.abs(studentRank - baselineRank) <= 25_000;
-  });
-}
-
 async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+  const config = loadConfig(args.configPath);
   const result = loadResult();
-  const studentRank = result.student.rank;
-  const candidates = loadCandidatesFromDb(studentRank);
+  const candidates = buildCandidates(config);
   console.log(`Loaded ${candidates.length} candidates from DB`);
 
   buildFigure2Scatter(result, candidates);
   console.log("Figure 2: selection scatter");
 
-  const subset = selectSubset(candidates, studentRank).slice(0, 120);
-  await buildFigure3Pareto(subset);
+  const subset = selectRankSubset(candidates, config);
+  await buildFigure3Pareto(subset, config);
   console.log("Figure 3: Pareto frontier");
 
-  await buildFigure4Sensitivity(subset);
+  await buildFigure4Sensitivity(candidates, config);
   console.log("Figure 4: sensitivity");
 
-  await buildFigure5Approximation(subset);
+  await buildFigure5Approximation(subset, config);
   console.log("Figure 5: approximation ratio");
 
-  await buildFigure6MarginalGain(subset);
+  await buildFigure6MarginalGain(subset, config);
   console.log("Figure 6: marginal gain");
 
-  buildTable2PreferenceSweep(subset);
+  buildTable2PreferenceSweep(subset, config);
   console.log("Table 2: preference sweep");
 
-  buildTable3Verification();
+  buildTable3Verification(config);
   console.log("Table 3: verification summary");
 }
 

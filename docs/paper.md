@@ -205,7 +205,7 @@ Theorem 5.3 predicts that the GSIO output is piecewise constant on the preferenc
 
 ### 5.5 Sensitivity analysis
 
-The reported utility gain is robust to moderate perturbations of the preference vector. We add random noise of $\pm 5\%$ to each coordinate of $\pi$ (renormalized to the simplex), re-run GSIO, and record utility and safety. Figure 4 shows the distribution over 50 perturbation trials on a representative 120-candidate subset. Utility varies within a tight band and safety stays above $0.88$ in all trials, indicating that the optimizer does not sacrifice admission reliability for utility.
+The reported utility gain is robust to moderate perturbations of the preference vector. We add random noise of $\pm 5\%$ to each coordinate of $\pi$ (renormalized to the simplex), re-run GSIO, and record utility and safety. Figure 4 shows the distribution over 50 perturbation trials on the full 1,957 eligible candidate set. Utility varies within a tight band and safety stays above $0.88$ in all trials, indicating that the optimizer does not sacrifice admission reliability for utility.
 
 ![Figure 4: Distribution of utility and safety under ±5% preference perturbations.](figures/fig4_sensitivity.svg)
 
@@ -243,13 +243,13 @@ Future work includes:
 
 | Preference profile | Utility | Safety | Neutral quality | Gain over baseline |
 |---|---:|---:|---:|---:|
-| Balanced | 0.7121 | 0.9006 | 0.8931 | 5.9% |
-| School-first | 0.7819 | 0.9006 | 0.8958 | 3.4% |
-| Major-first | 0.6772 | 0.9006 | 0.8454 | 11.2% |
-| Region-first | 0.7257 | 0.9006 | 0.7248 | 15.4% |
-| Safety-first | 0.8273 | 0.9006 | 0.8949 | 1.0% |
+| Balanced | 0.7304 | 0.9006 | 0.8751 | 7.2% |
+| School-first | 0.7902 | 0.9006 | 0.8950 | 3.9% |
+| Major-first | 0.6931 | 0.9006 | 0.8203 | 12.5% |
+| Region-first | 0.7392 | 0.9006 | 0.7244 | 16.3% |
+| Safety-first | 0.8365 | 0.9006 | 0.8659 | 1.5% |
 
-*Table 2: GSIO under five preference profiles (120-candidate subset, 12 slots). Safety is identical because all profiles retain the same safety-net programs.*
+*Table 2: GSIO under five preference profiles (120-candidate subset, 45 slots). Safety is identical because all profiles retain the same safety-net programs.*
 
 **Verification summary.** Table 3 summarizes the computer-verified theorem checks.
 
