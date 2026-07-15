@@ -42,3 +42,4 @@ docs/references.bib.bak
 
 # Auto-generated screenshot previews
 docs/paper_*.png
+.venv-data/
