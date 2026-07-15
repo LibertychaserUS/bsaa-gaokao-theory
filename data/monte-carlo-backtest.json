@@ -1,0 +1,385 @@
+{
+  "studentRank": 6580,
+  "replicates": 1000,
+  "seed": 20260711,
+  "gsio": {
+    "method": "GSIO",
+    "selectedCount": 45,
+    "meanAdmittedCount": 22.179,
+    "stdAdmittedCount": 1.4943088703477616,
+    "meanUtility": 0.9141281999999981,
+    "stdUtility": 0.0005920513153434906,
+    "admissionRateByProgram": [
+      {
+        "programId": "473066",
+        "rate": 0
+      },
+      {
+        "programId": "473067",
+        "rate": 0
+      },
+      {
+        "programId": "473065",
+        "rate": 0
+      },
+      {
+        "programId": "473130",
+        "rate": 0
+      },
+      {
+        "programId": "473064",
+        "rate": 0
+      },
+      {
+        "programId": "473813",
+        "rate": 0.658
+      },
+      {
+        "programId": "473331",
+        "rate": 0.673
+      },
+      {
+        "programId": "473237",
+        "rate": 0
+      },
+      {
+        "programId": "472751",
+        "rate": 0
+      },
+      {
+        "programId": "473113",
+        "rate": 0
+      },
+      {
+        "programId": "474968",
+        "rate": 0
+      },
+      {
+        "programId": "473114",
+        "rate": 0
+      },
+      {
+        "programId": "473230",
+        "rate": 0.332
+      },
+      {
+        "programId": "475032",
+        "rate": 1
+      },
+      {
+        "programId": "472750",
+        "rate": 0
+      },
+      {
+        "programId": "473333",
+        "rate": 0.663
+      },
+      {
+        "programId": "473142",
+        "rate": 0
+      },
+      {
+        "programId": "473122",
+        "rate": 0
+      },
+      {
+        "programId": "473195",
+        "rate": 0
+      },
+      {
+        "programId": "473204",
+        "rate": 0.339
+      },
+      {
+        "programId": "474386",
+        "rate": 0.505
+      },
+      {
+        "programId": "473322",
+        "rate": 0
+      },
+      {
+        "programId": "473241",
+        "rate": 0.324
+      },
+      {
+        "programId": "474387",
+        "rate": 0
+      },
+      {
+        "programId": "472797",
+        "rate": 1
+      },
+      {
+        "programId": "473137",
+        "rate": 0
+      },
+      {
+        "programId": "472897",
+        "rate": 1
+      },
+      {
+        "programId": "472796",
+        "rate": 1
+      },
+      {
+        "programId": "473199",
+        "rate": 0.342
+      },
+      {
+        "programId": "472798",
+        "rate": 1
+      },
+      {
+        "programId": "472802",
+        "rate": 0.684
+      },
+      {
+        "programId": "473517",
+        "rate": 1
+      },
+      {
+        "programId": "474402",
+        "rate": 1
+      },
+      {
+        "programId": "473518",
+        "rate": 1
+      },
+      {
+        "programId": "466550",
+        "rate": 1
+      },
+      {
+        "programId": "466546",
+        "rate": 1
+      },
+      {
+        "programId": "466549",
+        "rate": 1
+      },
+      {
+        "programId": "466447",
+        "rate": 1
+      },
+      {
+        "programId": "466543",
+        "rate": 0
+      },
+      {
+        "programId": "466542",
+        "rate": 1
+      },
+      {
+        "programId": "466554",
+        "rate": 1
+      },
+      {
+        "programId": "466551",
+        "rate": 0.659
+      },
+      {
+        "programId": "466545",
+        "rate": 1
+      },
+      {
+        "programId": "466585",
+        "rate": 1
+      },
+      {
+        "programId": "466587",
+        "rate": 1
+      }
+    ]
+  },
+  "baseline": {
+    "method": "Baseline",
+    "selectedCount": 45,
+    "meanAdmittedCount": 22.976,
+    "stdAdmittedCount": 1.2662637955813065,
+    "meanUtility": 0.7374548333333368,
+    "stdUtility": 0.014525673400913281,
+    "admissionRateByProgram": [
+      {
+        "programId": "466766",
+        "rate": 0.319
+      },
+      {
+        "programId": "473289",
+        "rate": 0
+      },
+      {
+        "programId": "473150",
+        "rate": 0
+      },
+      {
+        "programId": "466758",
+        "rate": 0.348
+      },
+      {
+        "programId": "470531",
+        "rate": 0
+      },
+      {
+        "programId": "466616",
+        "rate": 0
+      },
+      {
+        "programId": "476610",
+        "rate": 0
+      },
+      {
+        "programId": "466678",
+        "rate": 0
+      },
+      {
+        "programId": "470583",
+        "rate": 0
+      },
+      {
+        "programId": "476619",
+        "rate": 0
+      },
+      {
+        "programId": "475000",
+        "rate": 0
+      },
+      {
+        "programId": "466446",
+        "rate": 0
+      },
+      {
+        "programId": "474962",
+        "rate": 0
+      },
+      {
+        "programId": "466716",
+        "rate": 0
+      },
+      {
+        "programId": "466679",
+        "rate": 0
+      },
+      {
+        "programId": "466691",
+        "rate": 1
+      },
+      {
+        "programId": "469042",
+        "rate": 1
+      },
+      {
+        "programId": "473291",
+        "rate": 1
+      },
+      {
+        "programId": "469043",
+        "rate": 1
+      },
+      {
+        "programId": "473295",
+        "rate": 0
+      },
+      {
+        "programId": "473296",
+        "rate": 1
+      },
+      {
+        "programId": "472790",
+        "rate": 1
+      },
+      {
+        "programId": "466539",
+        "rate": 0
+      },
+      {
+        "programId": "469882",
+        "rate": 0.653
+      },
+      {
+        "programId": "473280",
+        "rate": 1
+      },
+      {
+        "programId": "473210",
+        "rate": 0.655
+      },
+      {
+        "programId": "473288",
+        "rate": 0.659
+      },
+      {
+        "programId": "473209",
+        "rate": 0.681
+      },
+      {
+        "programId": "473208",
+        "rate": 0.661
+      },
+      {
+        "programId": "472791",
+        "rate": 1
+      },
+      {
+        "programId": "473219",
+        "rate": 0
+      },
+      {
+        "programId": "466989",
+        "rate": 1
+      },
+      {
+        "programId": "473182",
+        "rate": 1
+      },
+      {
+        "programId": "470640",
+        "rate": 1
+      },
+      {
+        "programId": "466890",
+        "rate": 1
+      },
+      {
+        "programId": "475046",
+        "rate": 1
+      },
+      {
+        "programId": "466681",
+        "rate": 1
+      },
+      {
+        "programId": "473316",
+        "rate": 0
+      },
+      {
+        "programId": "472884",
+        "rate": 1
+      },
+      {
+        "programId": "478907",
+        "rate": 1
+      },
+      {
+        "programId": "476318",
+        "rate": 1
+      },
+      {
+        "programId": "473620",
+        "rate": 1
+      },
+      {
+        "programId": "474122",
+        "rate": 0
+      },
+      {
+        "programId": "473270",
+        "rate": 1
+      },
+      {
+        "programId": "473293",
+        "rate": 0
+      }
+    ]
+  }
+}

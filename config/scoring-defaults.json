@@ -1,0 +1,12 @@
+{
+  "$schema": "./scoring-defaults.schema.json",
+  "comment": "Operational defaults for scoring and baseline heuristics. These values are also compiled into src/domain/scoring.ts as fallbacks; the operational pipeline should load this file and pass values explicitly.",
+  "probabilityBuckets": {
+    "reach": [0.1, 0.3],
+    "steady": [0.4, 0.7],
+    "safety": [0.8, 1.0]
+  },
+  "tierThresholds": {
+    "quantiles": [0, 0.05, 0.2, 0.5, 0.8, 1.0]
+  }
+}

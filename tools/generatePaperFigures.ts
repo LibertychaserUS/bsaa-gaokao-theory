@@ -38,10 +38,15 @@ import {
 } from "../src/domain/paperTheory.js";
 import {
   loadConfig,
+  loadProbabilityModel,
   buildCandidates,
   selectRankSubset,
   type ProjectedCandidate,
 } from "../src/infrastructure/candidateProjection.js";
+import {
+  loadScoringDefaults,
+  type ProbabilityBuckets,
+} from "../src/infrastructure/scoringDefaults.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,12 +56,17 @@ mkdirSync(FIGURES_DIR, { recursive: true });
 
 const RESULT_PATH = path.resolve(PROJECT_ROOT, "data", "hlj-2026-physics-gsio.json");
 
-function parseArgs(argv: readonly string[]): { configPath: string } {
-  const flagIndex = argv.indexOf("--config");
-  if (flagIndex === -1 || flagIndex + 1 >= argv.length) {
-    return { configPath: "config/paper-sample.json" };
-  }
-  return { configPath: argv[flagIndex + 1] };
+function parseArgs(argv: readonly string[]): { configPath: string; probabilityModelPath?: string } {
+  const configFlag = argv.indexOf("--config");
+  const modelFlag = argv.indexOf("--probabilityModel");
+  return {
+    configPath:
+      configFlag === -1 || configFlag + 1 >= argv.length
+        ? "config/paper-sample.json"
+        : argv[configFlag + 1],
+    probabilityModelPath:
+      modelFlag === -1 || modelFlag + 1 >= argv.length ? undefined : argv[modelFlag + 1],
+  };
 }
 
 interface GaokaoResult {
@@ -321,13 +331,14 @@ async function buildFigure6MarginalGain(
 function buildTable2PreferenceSweep(
   candidates: ProjectedCandidate[],
   config: ReturnType<typeof loadConfig>,
+  probabilityBuckets: ProbabilityBuckets,
 ): void {
   const capacity = config.figures.preferenceSweep.capacity;
   const profiles = config.figures.preferenceSweepProfiles;
 
   const rows = profiles.map(({ name, pi }) => {
     const plan = greedySubmodularOptimization(candidates, capacity, pi);
-    const baselineIds = transparentBaselineSelection(candidates, capacity);
+    const baselineIds = transparentBaselineSelection(candidates, capacity, probabilityBuckets);
     const baselineUtility = evaluateSequence(baselineIds, candidates, pi);
     return {
       profile: name,
@@ -386,7 +397,12 @@ function buildTable3Verification(config: ReturnType<typeof loadConfig>): void {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  const config = loadConfig(args.configPath);
+  const baseConfig = loadConfig(args.configPath);
+  const scoringDefaults = loadScoringDefaults();
+  const probabilityModel = args.probabilityModelPath
+    ? loadProbabilityModel(args.probabilityModelPath)
+    : baseConfig.probabilityModel;
+  const config = { ...baseConfig, probabilityModel };
   const result = loadResult();
   const candidates = buildCandidates(config);
   console.log(`Loaded ${candidates.length} candidates from DB`);
@@ -407,7 +423,7 @@ async function main(): Promise<void> {
   await buildFigure6MarginalGain(subset, config);
   console.log("Figure 6: marginal gain");
 
-  buildTable2PreferenceSweep(subset, config);
+  buildTable2PreferenceSweep(subset, config, scoringDefaults.probabilityBuckets);
   console.log("Table 2: preference sweep");
 
   buildTable3Verification(config);

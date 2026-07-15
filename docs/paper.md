@@ -2,7 +2,7 @@
 
 **Abstract**
 
-Gaokao (China's National College Entrance Examination) volunteer filling is a high-stakes sequential decision problem under uncertainty. Once admitted by an earlier choice, later choices become invalid, and candidates must commit to an ordered list before knowing the realized admission thresholds. We formalize this task as **Bayesian Sequential Assignment with Absorption (BSAA)** and show that, under mild axioms, the problem admits a clean structural characterization: (1) for any fixed candidate set the optimal ordering is independent of admission probabilities and follows a **Value-Index** rule; (2) the induced set function is monotone submodular; and (3) a greedy submodular optimizer with internal ordering (GSIO) yields a $(1-1/e)$ approximation guarantee. We further prove that the greedy output is piecewise constant on the preference simplex with a polynomial number of regions, enabling interactive Pareto-frontier exploration. Using a real 2026 Heilongjiang physics-track dataset with 1,957 eligible programs, GSIO improves expected path utility by $22.5\%$ over the transparent 冲/稳/保 baseline while maintaining comparable admission safety. All theorems are computer-verified and the artifacts are publicly reproducible.
+Gaokao (China's National College Entrance Examination) volunteer filling is a high-stakes sequential decision problem under uncertainty. Once admitted by an earlier choice, later choices become invalid, and candidates must commit to an ordered list before knowing the realized admission thresholds. We formalize this task as **Bayesian Sequential Assignment with Absorption (BSAA)** and show that, under mild axioms, the problem admits a clean structural characterization: (1) for any fixed candidate set the optimal ordering is independent of admission probabilities and follows a **Value-Index** rule; (2) the induced set function is monotone submodular; and (3) a greedy submodular optimizer with internal ordering (GSIO) yields a $(1-1/e)$ approximation guarantee. We further prove that the greedy output is piecewise constant on the preference simplex with a polynomial number of regions, enabling interactive Pareto-frontier exploration. Using a real 2026 Heilongjiang physics-track dataset with 1,957 eligible programs, GSIO improves expected path utility by $21.4\%$ over the transparent 冲/稳/保 baseline while maintaining comparable admission safety. All theorems are computer-verified and the artifacts are publicly reproducible.
 
 ---
 
@@ -182,10 +182,10 @@ Table 1 summarizes the optimized 45-slot plan.
 
 | Method | Expected utility | Safety | Neutral quality |
 |---|---|---|---|
-| GSIO | **0.9146** | 1.0000 | 0.9917 |
-| 冲/稳/保 baseline | 0.7464 | 1.0000 | 0.9987 |
+| GSIO | **0.9144** | 1.0000 | 0.9908 |
+| 冲/稳/保 baseline | 0.7532 | 1.0000 | 0.9987 |
 
-*Table 1: Comparison on the HLJ 2026 physics sample (1,957 eligible candidates, 45 slots). GSIO improves expected path utility by 22.5% over the transparent baseline while matching its admission safety. Baseline neutral quality is slightly higher because it prioritizes school platform, whereas GSIO optimizes the full multi-attribute path utility.*
+*Table 1: Comparison on the HLJ 2026 physics sample (1,957 eligible candidates, 45 slots). GSIO improves expected path utility by 21.4% over the transparent baseline while matching its admission safety. Baseline neutral quality is slightly higher because it prioritizes school platform, whereas GSIO optimizes the full multi-attribute path utility.*
 
 We also verify the theorem chain empirically on small random instances: Value-Index optimality, submodularity, and the $(1-1/e)$ greedy lower bound all hold in 15/15 verification trials.
 
@@ -195,7 +195,20 @@ Figure 2 visualizes the programs selected by GSIO and by the baseline in the pro
 
 *Figure 2: Selected programs by admission probability and path value. Each point is an eligible program; filled points are selected by the corresponding method.*
 
-### 5.4 Parametric Pareto-frontier exploration
+### 5.4 Historical threshold bootstrap backtest
+
+The expected utility in Table 1 is computed from the calibrated admission probability model. To validate that this expectation is consistent with historical admission uncertainty, we run a non-parametric bootstrap over the observed 2022–2024 minimum-rank thresholds. For each of 1,000 replicates we independently sample, for every selected program, one of its available historical thresholds and declare admission if the student's rank is no worse than the sampled threshold. The realized utility is the path value of the first admitted program in the ordered list.
+
+| Method | Mean realized utility | Std. dev. | Mean admitted count |
+|---|---:|---:|---:|
+| GSIO | **0.9141** | 0.0006 | 22.18 |
+| 冲/稳/保 baseline | 0.7375 | 0.0145 | 22.98 |
+
+*Table 4: Bootstrap backtest (1,000 replicates) on the 45 selected programs. GSIO delivers higher realized utility with substantially lower variance.*
+
+The bootstrap confirms the model-based ranking: GSIO attains a $24.0\%$ higher mean realized utility than the baseline, and its standard deviation is an order of magnitude smaller, indicating that the optimizer's selected ordering is robust to historical threshold noise.
+
+### 5.5 Parametric Pareto-frontier exploration
 
 Theorem 5.3 predicts that the GSIO output is piecewise constant on the preference simplex. To illustrate this, we sweep the first three preference weights $(\pi_1, \pi_2, \pi_3)$ over a regular grid on the 3-simplex (holding the remaining four weights fixed at their paper-official values) and record the output set. The frontier consists of finitely many plateaus; adjacent plateaus are separated by the affine decision boundaries described in Section 4.4. Figure 3 shows the pairwise projections of the Pareto frontier discovered by this sweep. Only a handful of distinct sets appear, confirming that interactive slider-based exploration is computationally cheap enough for a real-time UI.
 
@@ -203,7 +216,7 @@ Theorem 5.3 predicts that the GSIO output is piecewise constant on the preferenc
 
 *Figure 3: Parametric Pareto frontier (projections onto objective pairs). Each point is a non-dominated GSIO output set.*
 
-### 5.5 Sensitivity analysis
+### 5.6 Sensitivity analysis
 
 The reported utility gain is robust to moderate perturbations of the preference vector. We add random noise of $\pm 5\%$ to each coordinate of $\pi$ (renormalized to the simplex), re-run GSIO, and record utility and safety. Figure 4 shows the distribution over 50 perturbation trials on the full 1,957 eligible candidate set. Utility varies within a tight band and safety stays above $0.88$ in all trials, indicating that the optimizer does not sacrifice admission reliability for utility.
 
@@ -243,13 +256,13 @@ Future work includes:
 
 | Preference profile | Utility | Safety | Neutral quality | Gain over baseline |
 |---|---:|---:|---:|---:|
-| Balanced | 0.7304 | 0.9006 | 0.8751 | 7.2% |
-| School-first | 0.7902 | 0.9006 | 0.8950 | 3.9% |
-| Major-first | 0.6931 | 0.9006 | 0.8203 | 12.5% |
-| Region-first | 0.7392 | 0.9006 | 0.7244 | 16.3% |
-| Safety-first | 0.8365 | 0.9006 | 0.8659 | 1.5% |
+| Balanced | 0.6542 | 0.8169 | 0.7695 | 5.5% |
+| School-first | 0.7091 | 0.8136 | 0.8084 | 2.9% |
+| Major-first | 0.6166 | 0.8178 | 0.7340 | 10.0% |
+| Region-first | 0.6612 | 0.8136 | 0.6312 | 13.4% |
+| Safety-first | 0.7575 | 0.8204 | 0.7429 | 1.8% |
 
-*Table 2: GSIO under five preference profiles (120-candidate subset, 45 slots). Safety is identical because all profiles retain the same safety-net programs.*
+*Table 2: GSIO under five preference profiles (120-candidate subset, 45 slots). Safety is stable across profiles because all retain the same safety-net programs.*
 
 **Verification summary.** Table 3 summarizes the computer-verified theorem checks.
 

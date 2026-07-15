@@ -50,7 +50,7 @@
 \maketitle
 
 \begin{abstract}
-Gaokao (China's National College Entrance Examination) volunteer filling is a high-stakes sequential decision problem under uncertainty. Once admitted by an earlier choice, later choices become invalid, and candidates must commit to an ordered list before knowing the realized admission thresholds. We formalize this task as \textbf{Bayesian Sequential Assignment with Absorption (BSAA)} and show that, under mild axioms, the problem admits a clean structural characterization: (1) for any fixed candidate set the optimal ordering is independent of admission probabilities and follows a \textbf{Value-Index} rule; (2) the induced set function is monotone submodular; and (3) a greedy submodular optimizer with internal ordering (GSIO) yields a $(1-1/e)$ approximation guarantee. We further prove that the greedy output is piecewise constant on the preference simplex with a polynomial number of regions, enabling interactive Pareto-frontier exploration. Using a real 2026 Heilongjiang physics-track dataset with 1,957 eligible programs, GSIO improves expected path utility by $22.5\%$ over the transparent reach/steady/safety baseline while maintaining comparable admission safety. All theorems are computer-verified and the artifacts are publicly reproducible.
+Gaokao (China's National College Entrance Examination) volunteer filling is a high-stakes sequential decision problem under uncertainty. Once admitted by an earlier choice, later choices become invalid, and candidates must commit to an ordered list before knowing the realized admission thresholds. We formalize this task as \textbf{Bayesian Sequential Assignment with Absorption (BSAA)} and show that, under mild axioms, the problem admits a clean structural characterization: (1) for any fixed candidate set the optimal ordering is independent of admission probabilities and follows a \textbf{Value-Index} rule; (2) the induced set function is monotone submodular; and (3) a greedy submodular optimizer with internal ordering (GSIO) yields a $(1-1/e)$ approximation guarantee. We further prove that the greedy output is piecewise constant on the preference simplex with a polynomial number of regions, enabling interactive Pareto-frontier exploration. Using a real 2026 Heilongjiang physics-track dataset with 1,957 eligible programs, GSIO improves expected path utility by $21.4\%$ over the transparent reach/steady/safety baseline while maintaining comparable admission safety. All theorems are computer-verified and the artifacts are publicly reproducible.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -249,13 +249,13 @@ Table~\ref{tab:main} summarizes the optimized 45-slot plan.
     \toprule
     Method & Expected utility & Safety & Neutral quality \\
     \midrule
-    GSIO & \textbf{0.9146} & 1.0000 & 0.9917 \\
-    reach/steady/safety & 0.7464 & 1.0000 & 0.9987 \\
+    GSIO & \textbf{0.9144} & 1.0000 & 0.9908 \\
+    reach/steady/safety & 0.7532 & 1.0000 & 0.9987 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-GSIO improves expected path utility by 22.5\% over the transparent baseline while matching its admission safety. The baseline's neutral quality is slightly higher because it prioritizes school platform, whereas GSIO optimizes the full multi-attribute path utility.
+GSIO improves expected path utility by 21.4\% over the transparent baseline while matching its admission safety. The baseline's neutral quality is slightly higher because it prioritizes school platform, whereas GSIO optimizes the full multi-attribute path utility.
 
 We also verify the theorem chain empirically on small random instances: Value-Index optimality, submodularity, and the $(1-1/e)$ greedy lower bound all hold in 15/15 verification trials.
 
@@ -267,6 +267,26 @@ Figure~\ref{fig:scatter} visualizes the programs selected by GSIO and by the bas
   \caption{Selected programs by admission probability and path value.}
   \label{fig:scatter}
 \end{figure}
+
+\subsection{Historical threshold bootstrap backtest}
+
+The expected utility in Table~\ref{tab:main} is computed from the calibrated admission probability model. To validate that this expectation is consistent with historical admission uncertainty, we run a non-parametric bootstrap over the observed 2022--2024 minimum-rank thresholds. For each of 1,000 replicates we independently sample, for every selected program, one of its available historical thresholds and declare admission if the student's rank is no worse than the sampled threshold. The realized utility is the path value of the first admitted program in the ordered list.
+
+\begin{table}[H]
+  \centering
+  \caption{Bootstrap backtest (1,000 replicates) on the 45 selected programs.}
+  \label{tab:mc}
+  \begin{tabular}{lccc}
+    \toprule
+    Method & Mean realized utility & Std.\ dev. & Mean admitted count \\
+    \midrule
+    GSIO & \textbf{0.9141} & 0.0006 & 22.18 \\
+    reach/steady/safety & 0.7375 & 0.0145 & 22.98 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The bootstrap confirms the model-based ranking: GSIO attains a $24.0\%$ higher mean realized utility than the baseline, and its standard deviation is an order of magnitude smaller, indicating that the optimizer's selected ordering is robust to historical threshold noise.
 
 \subsection{Parametric Pareto-frontier exploration}
 
@@ -320,11 +340,11 @@ The reported utility gain is robust to moderate perturbations of the preference 
     \toprule
     Preference profile & Utility & Safety & Neutral quality & Gain over baseline \\
     \midrule
-    Balanced & 0.7304 & 0.9006 & 0.8751 & 7.2\% \\
-    School-first & 0.7902 & 0.9006 & 0.8950 & 3.9\% \\
-    Major-first & 0.6931 & 0.9006 & 0.8203 & 12.5\% \\
-    Region-first & 0.7392 & 0.9006 & 0.7244 & 16.3\% \\
-    Safety-first & 0.8365 & 0.9006 & 0.8659 & 1.5\% \\
+    Balanced & 0.6542 & 0.8169 & 0.7695 & 5.5\% \\
+    School-first & 0.7091 & 0.8136 & 0.8084 & 2.9\% \\
+    Major-first & 0.6166 & 0.8178 & 0.7340 & 10.0\% \\
+    Region-first & 0.6612 & 0.8136 & 0.6312 & 13.4\% \\
+    Safety-first & 0.7575 & 0.8204 & 0.7429 & 1.8\% \\
     \bottomrule
   \end{tabular}
 \end{table}

@@ -7,100 +7,121 @@
     "values": [
       {
         "index": 0,
-        "objective0": 0.305295538783679,
-        "objective1": 0.2006315303808105,
-        "objective2": 0.3531114934702265,
+        "objective0": 0.19909054606266727,
+        "objective1": 0.15560877740840534,
+        "objective2": 0.2738714482387934,
         "selectedCount": 10
       },
       {
         "index": 1,
-        "objective0": 0.32578308599201233,
-        "objective1": 0.22163153038081052,
-        "objective2": 0.34302750291463274,
+        "objective0": 0.21519663844753054,
+        "objective1": 0.15508451942529206,
+        "objective2": 0.272948754188514,
         "selectedCount": 10
       },
       {
         "index": 2,
-        "objective0": 0.3262107443253457,
-        "objective1": 0.31189293631831044,
-        "objective2": 0.2840653140265078,
+        "objective0": 0.21664713648588507,
+        "objective1": 0.18609931538753172,
+        "objective2": 0.2568364448647201,
         "selectedCount": 10
       },
       {
         "index": 3,
-        "objective0": 0.3648488038235748,
-        "objective1": 0.2006315303808105,
-        "objective2": 0.3531114934702265,
+        "objective0": 0.199581190554081,
+        "objective1": 0.2141764545810428,
+        "objective2": 0.23865604375917351,
         "selectedCount": 10
       },
       {
         "index": 4,
-        "objective0": 0.39945598261160425,
-        "objective1": 0.24158153038081048,
-        "objective2": 0.33241277601400776,
+        "objective0": 0.21478044763456786,
+        "objective1": 0.23777379348130356,
+        "objective2": 0.21779797510514357,
         "selectedCount": 10
       },
       {
         "index": 5,
-        "objective0": 0.345891115839929,
-        "objective1": 0.31189293631831044,
-        "objective2": 0.2840653140265078,
+        "objective0": 0.19758111152581243,
+        "objective1": 0.23808115678380906,
+        "objective2": 0.19684920148080653,
         "selectedCount": 10
       },
       {
         "index": 6,
-        "objective0": 0.3466304374472207,
-        "objective1": 0.31189293631831044,
-        "objective2": 0.2407073140265078,
+        "objective0": 0.2624456966894683,
+        "objective1": 0.15406357285330938,
+        "objective2": 0.27115188822182457,
         "selectedCount": 10
       },
       {
         "index": 7,
-        "objective0": 0.3995102830282709,
-        "objective1": 0.2605340303808105,
-        "objective2": 0.32123937927650775,
+        "objective0": 0.2630501190215466,
+        "objective1": 0.1849306039905718,
+        "objective2": 0.25472114878129887,
         "selectedCount": 10
       },
       {
         "index": 8,
-        "objective0": 0.36453588338294984,
-        "objective1": 0.29564353663081044,
-        "objective2": 0.29709741402650774,
+        "objective0": 0.26173160969079806,
+        "objective1": 0.23661846293777078,
+        "objective2": 0.21558229585013075,
         "selectedCount": 10
       },
       {
         "index": 9,
-        "objective0": 0.39979269372593496,
-        "objective1": 0.2006315303808105,
-        "objective2": 0.33241277601400776,
+        "objective0": 0.2769275533488004,
+        "objective1": 0.15367869904593764,
+        "objective2": 0.27047451032085024,
         "selectedCount": 10
       },
       {
         "index": 10,
-        "objective0": 0.3995102830282709,
-        "objective1": 0.2605340303808105,
-        "objective2": 0.29709741402650774,
+        "objective0": 0.2914689740668106,
+        "objective1": 0.1691217487135241,
+        "objective2": 0.26191357835533885,
         "selectedCount": 10
       },
       {
         "index": 11,
-        "objective0": 0.3998671582120466,
-        "objective1": 0.2605340303808105,
-        "objective2": 0.2840653140265078,
+        "objective0": 0.30369092432579947,
+        "objective1": 0.19567124895115975,
+        "objective2": 0.24307384228167855,
         "selectedCount": 10
       },
       {
         "index": 12,
-        "objective0": 0.3997411083301017,
-        "objective1": 0.2006315303808105,
-        "objective2": 0.32123937927650775,
+        "objective0": 0.30430348317133105,
+        "objective1": 0.18245141635639073,
+        "objective2": 0.2522125871014276,
         "selectedCount": 10
       },
       {
         "index": 13,
-        "objective0": 0.39940168219493755,
-        "objective1": 0.22163153038081052,
-        "objective2": 0.29709741402650774,
+        "objective0": 0.3044878179540369,
+        "objective1": 0.16844540975098563,
+        "objective2": 0.2523157999337801,
+        "selectedCount": 10
+      },
+      {
+        "index": 14,
+        "objective0": 0.28935727647778453,
+        "objective1": 0.20956332691972093,
+        "objective2": 0.22421880794241134,
+        "selectedCount": 10
+      },
+      {
+        "index": 15,
+        "objective0": 0.3031820309381433,
+        "objective1": 0.19539610573068752,
+        "objective2": 0.23354610969580267,
+        "selectedCount": 10
+      },
+      {
+        "index": 16,
+        "objective0": 0.30321607886380514,
+        "objective1": 0.1678291385344257,
+        "objective2": 0.23361024345635956,
         "selectedCount": 10
       }
     ]

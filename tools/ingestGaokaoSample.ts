@@ -16,19 +16,26 @@ import {
 } from "../src/domain/paperTheory.js";
 import {
   loadConfig,
+  loadProbabilityModel,
   buildCandidates,
   loadOnePointSegment,
   totalRankedFromOnePoint,
   type ProjectedCandidate,
   type PaperSampleConfig,
 } from "../src/infrastructure/candidateProjection.js";
+import { loadScoringDefaults } from "../src/infrastructure/scoringDefaults.js";
 
-function parseArgs(argv: readonly string[]): { configPath: string } {
-  const flagIndex = argv.indexOf("--config");
-  if (flagIndex === -1 || flagIndex + 1 >= argv.length) {
-    return { configPath: "config/paper-sample.json" };
-  }
-  return { configPath: argv[flagIndex + 1] };
+function parseArgs(argv: readonly string[]): { configPath: string; probabilityModelPath?: string } {
+  const configFlag = argv.indexOf("--config");
+  const modelFlag = argv.indexOf("--probabilityModel");
+  return {
+    configPath:
+      configFlag === -1 || configFlag + 1 >= argv.length
+        ? "config/paper-sample.json"
+        : argv[configFlag + 1],
+    probabilityModelPath:
+      modelFlag === -1 || modelFlag + 1 >= argv.length ? undefined : argv[modelFlag + 1],
+  };
 }
 
 interface IngestResult {
@@ -55,11 +62,12 @@ interface IngestResult {
 function runOptimization(
   candidates: ProjectedCandidate[],
   config: PaperSampleConfig,
+  probabilityBuckets: ReturnType<typeof loadScoringDefaults>["probabilityBuckets"],
 ): IngestResult {
   const { slotCount, preferencePi } = config.optimization;
 
   const gsio = greedySubmodularOptimization(candidates, slotCount, preferencePi);
-  const baselineIds = transparentBaselineSelection(candidates, slotCount);
+  const baselineIds = transparentBaselineSelection(candidates, slotCount, probabilityBuckets);
 
   const onePoint = loadOnePointSegment(config);
   const totalRanked = totalRankedFromOnePoint(onePoint) || 109_811;
@@ -88,14 +96,19 @@ function runOptimization(
 
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
-  const config = loadConfig(args.configPath);
+  const baseConfig = loadConfig(args.configPath);
+  const scoringDefaults = loadScoringDefaults();
+  const probabilityModel = args.probabilityModelPath
+    ? loadProbabilityModel(args.probabilityModelPath)
+    : baseConfig.probabilityModel;
+  const config = { ...baseConfig, probabilityModel };
   const candidates = buildCandidates(config);
 
   if (candidates.length === 0) {
     throw new Error("No eligible candidates found for the student profile.");
   }
 
-  const result = runOptimization(candidates, config);
+  const result = runOptimization(candidates, config, scoringDefaults.probabilityBuckets);
   console.log(JSON.stringify(result, null, 2));
 }
 

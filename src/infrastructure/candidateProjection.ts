@@ -15,7 +15,7 @@ import type { PaperCandidate } from "../domain/paperTheory.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PROJECT_ROOT = path.resolve(__dirname, "..");
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
 export const studentProfileSchema = z.object({
   province: z.string().min(1),
@@ -44,11 +44,25 @@ export const optimizationSchema = z.object({
 
 export type OptimizationConfig = z.infer<typeof optimizationSchema>;
 
-export const probabilityModelSchema = z.object({
+export const sigmoidProbabilityModelSchema = z.object({
+  kind: z.literal("sigmoid"),
   offset: z.number().finite(),
   scale: z.number().finite().positive(),
   outputRange: z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]),
 });
+
+export const logisticProbabilityModelSchema = z.object({
+  kind: z.literal("logistic"),
+  beta0: z.number().finite(),
+  beta1: z.number().finite(),
+  rankDeltaScale: z.number().finite().positive().default(1000),
+  outputRange: z.tuple([z.number().min(0).max(1), z.number().min(0).max(1)]),
+});
+
+export const probabilityModelSchema = z.union([
+  sigmoidProbabilityModelSchema,
+  logisticProbabilityModelSchema,
+]);
 
 export type ProbabilityModelConfig = z.infer<typeof probabilityModelSchema>;
 
@@ -156,6 +170,17 @@ export function loadConfig(configPath: string): PaperSampleConfig {
   return paperSampleConfigSchema.parse(raw);
 }
 
+export function loadProbabilityModel(modelPath: string): ProbabilityModelConfig {
+  const absolutePath = resolvePath(modelPath);
+  const raw = JSON.parse(readFileSync(absolutePath, "utf-8")) as unknown;
+  // The calibration tool wraps the model under a `probabilityModel` key.
+  const wrapped = z.object({ probabilityModel: probabilityModelSchema }).safeParse(raw);
+  if (wrapped.success) {
+    return wrapped.data.probabilityModel;
+  }
+  return probabilityModelSchema.parse(raw);
+}
+
 export function loadOnePointSegment(config: PaperSampleConfig): OnePointRow[] {
   const text = readFileSync(resolvePath(config.dataPaths.onePointSegment), "utf-8");
   const lines = text.trim().split("\n");
@@ -192,10 +217,19 @@ export function subjectEligible(requirement: string | null, subjects: readonly s
   return requiredSubjects.every((subject) => normalizedSubjects.has(subject));
 }
 
+function logistic(x: number): number {
+  return 1 / (1 + Math.exp(-x));
+}
+
 export function admissionProbability(rankDelta: number, model: ProbabilityModelConfig): number {
-  const normalized = clamp01((rankDelta + model.offset) / model.scale);
   const [minP, maxP] = model.outputRange;
-  return clamp01(1 - normalized) * (maxP - minP) + minP;
+  let raw: number;
+  if (model.kind === "sigmoid") {
+    raw = clamp01(1 - clamp01((rankDelta + model.offset) / model.scale));
+  } else {
+    raw = logistic(model.beta0 + model.beta1 * (rankDelta / model.rankDeltaScale));
+  }
+  return raw * (maxP - minP) + minP;
 }
 
 export function schoolPlatform(softRank: number | null, scoring: AttributeScoringConfig): number {

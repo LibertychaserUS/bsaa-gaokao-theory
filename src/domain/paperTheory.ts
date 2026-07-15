@@ -11,6 +11,8 @@
  * - 透明冲稳保基准（Section 8.1）
  */
 
+import { defaultProbabilityBuckets, type ProbabilityBuckets } from "./scoring.js";
+
 export interface PaperCandidate {
   id: string;
   /** 历史估计录取概率 p_c ∈ [0,1] */
@@ -117,8 +119,15 @@ function assertValidPreference(pi: PreferenceVector, prototypeCount: number): vo
   }
 }
 
+const candidateMapCache = new WeakMap<readonly PaperCandidate[], Map<string, PaperCandidate>>();
+
 function candidateById(candidates: readonly PaperCandidate[], id: string): PaperCandidate {
-  const candidate = candidates.find((c) => c.id === id);
+  let map = candidateMapCache.get(candidates);
+  if (!map) {
+    map = new Map(candidates.map((c) => [c.id, c]));
+    candidateMapCache.set(candidates, map);
+  }
+  const candidate = map.get(id);
   if (!candidate) {
     throw new RangeError(`Candidate ${id} not found.`);
   }
@@ -609,6 +618,7 @@ export function longTermProxy(
 export function transparentBaselineSelection(
   candidates: readonly PaperCandidate[],
   capacity: number,
+  buckets: ProbabilityBuckets = defaultProbabilityBuckets(),
 ): string[] {
   assertValidCandidates(candidates);
   if (!Number.isInteger(capacity) || capacity <= 0) {
@@ -621,9 +631,15 @@ export function transparentBaselineSelection(
       b.probability - a.probability ||
       a.id.localeCompare(b.id),
   );
-  const reach = sortedByTier.filter((c) => c.probability >= 0.1 && c.probability <= 0.3);
-  const steady = sortedByTier.filter((c) => c.probability >= 0.4 && c.probability <= 0.7);
-  const safe = sortedByTier.filter((c) => c.probability >= 0.8 && c.probability <= 1.0);
+  const reach = sortedByTier.filter(
+    (c) => c.probability >= buckets.reach[0] && c.probability <= buckets.reach[1],
+  );
+  const steady = sortedByTier.filter(
+    (c) => c.probability >= buckets.steady[0] && c.probability <= buckets.steady[1],
+  );
+  const safe = sortedByTier.filter(
+    (c) => c.probability >= buckets.safety[0] && c.probability <= buckets.safety[1],
+  );
 
   const selected = new Set<string>();
   const ordered: string[] = [];

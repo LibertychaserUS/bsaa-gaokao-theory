@@ -7,23 +7,12 @@
  *     have negligible admission probability and can be filtered without loss.
  */
 
-export interface TierThresholds {
-  readonly quantiles: readonly number[];
-}
+import { defaultTierThresholds, type TierThresholds } from "./scoring.js";
 
 export interface TieredCandidate {
   readonly id: string;
   readonly reachableTiers: readonly number[];
   readonly admissionProbabilityByTier?: Readonly<Record<number, number>>;
-}
-
-/**
- * Default five-tier quantiles used in the theory framework.
- * Tier 1: [0%, 5%), Tier 2: [5%, 20%), Tier 3: [20%, 50%),
- * Tier 4: [50%, 80%), Tier 5: [80%, 100%].
- */
-export function defaultTierThresholds(): TierThresholds {
-  return { quantiles: [0, 0.05, 0.2, 0.5, 0.8, 1.0] };
 }
 
 /**

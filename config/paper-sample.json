@@ -28,6 +28,7 @@
     "preferencePi": [0.2, 0.25, 0.2, 0.15, 0.05, 0.1, 0.05]
   },
   "probabilityModel": {
+    "kind": "sigmoid",
     "offset": 2500,
     "scale": 6500,
     "outputRange": [0.05, 0.95]

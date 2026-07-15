@@ -1,0 +1,340 @@
+{
+  "probabilityModel": {
+    "kind": "logistic",
+    "beta0": -0.159955,
+    "beta1": -4.878828,
+    "rankDeltaScale": 10000,
+    "outputRange": [
+      0.001,
+      0.999
+    ]
+  },
+  "metrics": {
+    "train": {
+      "sampleCount": 1127228,
+      "logLoss": 1.2435933279784894,
+      "accuracy": 0.5001712164708471,
+      "auc": 0.49973838184492225,
+      "calibrationMae": 0.2603162448318826
+    },
+    "test": {
+      "sampleCount": 689102,
+      "logLoss": 1.14223816678927,
+      "accuracy": 0.5001480187258199,
+      "auc": 0.48939433469813537,
+      "calibrationMae": 0.28574370193165266
+    }
+  },
+  "buckets": {
+    "byProbability": [
+      {
+        "binStart": 0.001,
+        "binEnd": 0.0018520916525615718,
+        "count": 34455,
+        "actualRate": 0.49992744159048036,
+        "meanPredicted": 0.0011275919720331992
+      },
+      {
+        "binStart": 0.0018525071196562322,
+        "binEnd": 0.0180760119065626,
+        "count": 34455,
+        "actualRate": 0.49989841822667247,
+        "meanPredicted": 0.007693709895638627
+      },
+      {
+        "binStart": 0.0180760119065626,
+        "binEnd": 0.07007204667228793,
+        "count": 34455,
+        "actualRate": 0.49992744159048036,
+        "meanPredicted": 0.04103290846174252
+      },
+      {
+        "binStart": 0.07007204667228793,
+        "binEnd": 0.15266664068896638,
+        "count": 34455,
+        "actualRate": 0.4998693948628646,
+        "meanPredicted": 0.11034796457159912
+      },
+      {
+        "binStart": 0.15266664068896638,
+        "binEnd": 0.2352109573246603,
+        "count": 34455,
+        "actualRate": 0.49981134813524886,
+        "meanPredicted": 0.19452732404185996
+      },
+      {
+        "binStart": 0.2352109573246603,
+        "binEnd": 0.3096646770193336,
+        "count": 34455,
+        "actualRate": 0.49984037149905675,
+        "meanPredicted": 0.27328343074785233
+      },
+      {
+        "binStart": 0.3096646770193336,
+        "binEnd": 0.36992127343046005,
+        "count": 34455,
+        "actualRate": 0.4996081845885938,
+        "meanPredicted": 0.3409411023232385
+      },
+      {
+        "binStart": 0.36992127343046005,
+        "binEnd": 0.416218389235144,
+        "count": 34455,
+        "actualRate": 0.49975330140763313,
+        "meanPredicted": 0.39429721888015257
+      },
+      {
+        "binStart": 0.416218389235144,
+        "binEnd": 0.4487089964664752,
+        "count": 34455,
+        "actualRate": 0.4991147874038601,
+        "meanPredicted": 0.43334605550353095
+      },
+      {
+        "binStart": 0.4487089964664752,
+        "binEnd": 0.4600551746593516,
+        "count": 34455,
+        "actualRate": 0.25137135393992166,
+        "meanPredicted": 0.45737785925085855
+      },
+      {
+        "binStart": 0.4600551746593516,
+        "binEnd": 0.4602970775680294,
+        "count": 34455,
+        "actualRate": 0.05569583514729357,
+        "meanPredicted": 0.4600679385177054
+      },
+      {
+        "binStart": 0.4602970775680294,
+        "binEnd": 0.4602970775680294,
+        "count": 34455,
+        "actualRate": 0.9979683645334494,
+        "meanPredicted": 0.46029707756823723
+      },
+      {
+        "binStart": 0.4602970775680294,
+        "binEnd": 0.4749629568540095,
+        "count": 34455,
+        "actualRate": 0.6951095631983747,
+        "meanPredicted": 0.4644251922545409
+      },
+      {
+        "binStart": 0.4749629568540095,
+        "binEnd": 0.5084159761068203,
+        "count": 34455,
+        "actualRate": 0.5005949789580613,
+        "meanPredicted": 0.49078698123370396
+      },
+      {
+        "binStart": 0.5084159761068203,
+        "binEnd": 0.5528910765960748,
+        "count": 34455,
+        "actualRate": 0.5002757219561748,
+        "meanPredicted": 0.5295607064873958
+      },
+      {
+        "binStart": 0.5528910765960748,
+        "binEnd": 0.6148992718274823,
+        "count": 34455,
+        "actualRate": 0.5003627920475984,
+        "meanPredicted": 0.5822230420446014
+      },
+      {
+        "binStart": 0.6148992718274823,
+        "binEnd": 0.7046329424878685,
+        "count": 34455,
+        "actualRate": 0.5004498621390219,
+        "meanPredicted": 0.6569471970814865
+      },
+      {
+        "binStart": 0.7046329424878685,
+        "binEnd": 0.8281777087580535,
+        "count": 34455,
+        "actualRate": 0.5001596285009433,
+        "meanPredicted": 0.763453962385781
+      },
+      {
+        "binStart": 0.8281777087580535,
+        "binEnd": 0.9553349110731572,
+        "count": 34455,
+        "actualRate": 0.5001596285009433,
+        "meanPredicted": 0.8948790117284391
+      },
+      {
+        "binStart": 0.9553349110731572,
+        "binEnd": 0.999,
+        "count": 34455,
+        "actualRate": 0.5001015817733275,
+        "meanPredicted": 0.9863673885330153
+      },
+      {
+        "binStart": 0.999,
+        "binEnd": 0.999,
+        "count": 2,
+        "actualRate": 0.5,
+        "meanPredicted": 0.999
+      }
+    ],
+    "byRankDelta": [
+      {
+        "binStart": -101124,
+        "binEnd": -6651,
+        "count": 34455,
+        "actualRate": 0.5001015817733275,
+        "predictedRate": 0.9863699225574285
+      },
+      {
+        "binStart": -6651,
+        "binEnd": -3561,
+        "count": 34455,
+        "actualRate": 0.5001306051371354,
+        "predictedRate": 0.8948863933790195
+      },
+      {
+        "binStart": -3561,
+        "binEnd": -2114,
+        "count": 34455,
+        "actualRate": 0.5001596285009433,
+        "predictedRate": 0.7634611337551925
+      },
+      {
+        "binStart": -2114,
+        "binEnd": -1289,
+        "count": 34455,
+        "actualRate": 0.5005079088666377,
+        "predictedRate": 0.6569524058273881
+      },
+      {
+        "binStart": -1289,
+        "binEnd": -764,
+        "count": 34455,
+        "actualRate": 0.5002757219561748,
+        "predictedRate": 0.582226641417389
+      },
+      {
+        "binStart": -764,
+        "binEnd": -397,
+        "count": 34455,
+        "actualRate": 0.5003047453199826,
+        "predictedRate": 0.5295632881214682
+      },
+      {
+        "binStart": -397,
+        "binEnd": -122,
+        "count": 34455,
+        "actualRate": 0.5007110724132927,
+        "predictedRate": 0.4907889230719834
+      },
+      {
+        "binStart": -122,
+        "binEnd": -1,
+        "count": 34455,
+        "actualRate": 0.6951385865621825,
+        "predictedRate": 0.46442604356113154
+      },
+      {
+        "binStart": -1,
+        "binEnd": -1,
+        "count": 34455,
+        "actualRate": 0.9976781308953707,
+        "predictedRate": 0.46029707756823723
+      },
+      {
+        "binStart": -1,
+        "binEnd": 1,
+        "count": 34455,
+        "actualRate": 0.055057321143520535,
+        "predictedRate": 0.4600679525593234
+      },
+      {
+        "binStart": 1,
+        "binEnd": 95,
+        "count": 34455,
+        "actualRate": 0.2523581483093891,
+        "predictedRate": 0.45737851785949407
+      },
+      {
+        "binStart": 95,
+        "binEnd": 367,
+        "count": 34455,
+        "actualRate": 0.49891162385720506,
+        "predictedRate": 0.43334794147693606
+      },
+      {
+        "binStart": 367,
+        "binEnd": 766,
+        "count": 34455,
+        "actualRate": 0.499782324771441,
+        "predictedRate": 0.39429990627622047
+      },
+      {
+        "binStart": 766,
+        "binEnd": 1319,
+        "count": 34455,
+        "actualRate": 0.4996372079524017,
+        "predictedRate": 0.34094460002149807
+      },
+      {
+        "binStart": 1319,
+        "binEnd": 2095,
+        "count": 34455,
+        "actualRate": 0.4997242780438253,
+        "predictedRate": 0.2732877525426441
+      },
+      {
+        "binStart": 2095,
+        "binEnd": 3196,
+        "count": 34455,
+        "actualRate": 0.4998693948628646,
+        "predictedRate": 0.194532115469335
+      },
+      {
+        "binStart": 3196,
+        "binEnd": 4999,
+        "count": 34455,
+        "actualRate": 0.49989841822667247,
+        "predictedRate": 0.11035275891750874
+      },
+      {
+        "binStart": 4999,
+        "binEnd": 7975,
+        "count": 34455,
+        "actualRate": 0.49992744159048036,
+        "predictedRate": 0.041035926661412044
+      },
+      {
+        "binStart": 7975,
+        "binEnd": 14152,
+        "count": 34455,
+        "actualRate": 0.49992744159048036,
+        "predictedRate": 0.0076946516170020495
+      },
+      {
+        "binStart": 14152,
+        "binEnd": 147283,
+        "count": 34455,
+        "actualRate": 0.49989841822667247,
+        "predictedRate": 0.001127641457281744
+      },
+      {
+        "binStart": 158909,
+        "binEnd": 158911,
+        "count": 2,
+        "actualRate": 0.5,
+        "predictedRate": 0.001
+      }
+    ]
+  },
+  "trainingOptions": {
+    "learningRate": 2,
+    "maxIterations": 2000,
+    "l2Lambda": 0.0001,
+    "convergenceEpsilon": 1e-9,
+    "rankDeltaScale": 10000,
+    "outputRange": [
+      0.001,
+      0.999
+    ],
+    "gridPoints": 200
+  }
+}

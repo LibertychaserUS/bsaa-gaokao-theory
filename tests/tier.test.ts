@@ -3,13 +3,13 @@ import test from "node:test";
 import {
   computeTier,
   computeTierFromRank,
-  defaultTierThresholds,
   filterReachableCandidates,
   normalizeRank,
   requireReachableCandidates,
   verifyTierCompleteness,
   type TieredCandidate,
 } from "../src/domain/tier.js";
+import { defaultTierThresholds } from "../src/domain/scoring.js";
 
 test("default tier thresholds match theory framework", () => {
   const thresholds = defaultTierThresholds();

@@ -19,6 +19,7 @@ import {
   probabilityTierBaseline,
   valueIndexOrder,
 } from "./bsaaCore.js";
+import { defaultProbabilityBuckets } from "./scoring.js";
 
 const EPSILON = 1e-9;
 
@@ -447,7 +448,7 @@ export function buildChongWenBaoBaseline(
   candidates: readonly BsaaCandidate[],
   capacity: number,
 ): BsaaCandidate[] {
-  return probabilityTierBaseline(candidates, capacity);
+  return probabilityTierBaseline(candidates, capacity, defaultProbabilityBuckets());
 }
 
 /**

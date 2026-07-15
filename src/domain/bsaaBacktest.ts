@@ -18,6 +18,7 @@ import {
   verifyValueIndexTheorem as paperVerifyValueIndexTheorem,
   type PaperCandidate,
 } from "./paperTheory.js";
+import { defaultProbabilityBuckets, type ProbabilityBuckets } from "./scoring.js";
 
 export interface BsaaCandidate {
   readonly id: string;
@@ -66,6 +67,8 @@ export interface BsaaBacktestConfig {
   readonly attributeDim: number;
   /** Dirichlet prior α for prototype distribution sampling. */
   readonly alpha: readonly number[];
+  /** Probability buckets for the transparent reach/steady/safety baseline. */
+  readonly probabilityBuckets?: ProbabilityBuckets;
 }
 
 export interface BsaaBacktestSummary {
@@ -293,17 +296,18 @@ export function greedySubmodularOptimizer(
 export function baselineReachSteadySafe(
   candidates: readonly BsaaScoredCandidate[],
   slotCount: number,
+  buckets: ProbabilityBuckets = defaultProbabilityBuckets(),
 ): BsaaScoredCandidate[] {
   const reach = candidates
-    .filter((c) => c.p >= 0.1 && c.p <= 0.3)
+    .filter((c) => c.p >= buckets.reach[0] && c.p <= buckets.reach[1])
     .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p || a.id.localeCompare(b.id))
     .slice(0, Math.floor(slotCount / 3));
   const steady = candidates
-    .filter((c) => c.p >= 0.4 && c.p <= 0.7)
+    .filter((c) => c.p >= buckets.steady[0] && c.p <= buckets.steady[1])
     .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p || a.id.localeCompare(b.id))
     .slice(0, Math.floor(slotCount / 3));
   const safe = candidates
-    .filter((c) => c.p >= 0.8 && c.p <= 1.0)
+    .filter((c) => c.p >= buckets.safety[0] && c.p <= buckets.safety[1])
     .sort((a, b) => b.schoolTier - a.schoolTier || b.p - a.p || a.id.localeCompare(b.id))
     .slice(0, Math.max(0, slotCount - reach.length - steady.length));
 
@@ -500,8 +504,9 @@ export function runBsaaMonteCarloBacktest(config: BsaaBacktestConfig): BsaaBackt
     const student = generateStudent(rng, config.alpha, totalRanked);
     const scored = scoreCandidates(candidates, student.preference, prototypes);
 
+    const buckets = config.probabilityBuckets ?? defaultProbabilityBuckets();
     const greedyOrder = greedySubmodularOptimizer(scored, config.slotCount);
-    const baselineOrder = baselineReachSteadySafe(scored, config.slotCount);
+    const baselineOrder = baselineReachSteadySafe(scored, config.slotCount, buckets);
     const greedyPlan = buildPlan(greedyOrder);
     const baselinePlan = buildPlan(baselineOrder);
 

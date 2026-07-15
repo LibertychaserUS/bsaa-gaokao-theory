@@ -17,6 +17,7 @@ import type {
   BsaaGreedyTraceStep,
   BsaaSelectionResult,
 } from "../schemas.js";
+import { defaultProbabilityBuckets, type ProbabilityBuckets } from "./scoring.js";
 
 export type { BsaaCandidate, BsaaGreedyResult, BsaaGreedyTraceStep, BsaaSelectionResult };
 
@@ -332,11 +333,18 @@ export function pathGain(algorithmUtility: number, baselineUtility: number): num
 export function probabilityTierBaseline(
   candidates: readonly BsaaCandidate[],
   capacity: number,
+  buckets: ProbabilityBuckets = defaultProbabilityBuckets(),
 ): BsaaCandidate[] {
   if (capacity <= 0) return [];
-  const reach = candidates.filter((c) => c.probability >= 0.1 && c.probability <= 0.3);
-  const steady = candidates.filter((c) => c.probability >= 0.4 && c.probability <= 0.7);
-  const safety = candidates.filter((c) => c.probability >= 0.8 && c.probability <= 1.0);
+  const reach = candidates.filter(
+    (c) => c.probability >= buckets.reach[0] && c.probability <= buckets.reach[1],
+  );
+  const steady = candidates.filter(
+    (c) => c.probability >= buckets.steady[0] && c.probability <= buckets.steady[1],
+  );
+  const safety = candidates.filter(
+    (c) => c.probability >= buckets.safety[0] && c.probability <= buckets.safety[1],
+  );
   const byProbabilityDesc = (left: BsaaCandidate, right: BsaaCandidate): number => {
     if (right.probability !== left.probability) return right.probability - left.probability;
     return left.id.localeCompare(right.id);
