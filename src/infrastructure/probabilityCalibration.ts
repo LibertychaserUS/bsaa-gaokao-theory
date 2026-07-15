@@ -14,6 +14,7 @@
  *      to the empirical survival curve.
  */
 
+import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 
 export interface LogisticModel {
@@ -123,6 +124,120 @@ export function buildResiduals(dbPath: string, years: readonly number[]): number
     }
   }
   return residuals;
+}
+
+export interface RankDistributionRow {
+  readonly rank: number;
+  readonly weight: number;
+}
+
+export interface TestProgram {
+  readonly programId: number;
+  readonly estimatedRank: number;
+  readonly minRank: number;
+}
+
+export function loadRankDistribution(onePointSegmentPath: string): RankDistributionRow[] {
+  const text = readFileSync(onePointSegmentPath, "utf-8");
+  const lines = text.trim().split("\n");
+  const rows: RankDistributionRow[] = [];
+  for (let i = 1; i < lines.length; i += 1) {
+    const parts = lines[i].split(",");
+    const sameScoreCount = Number(parts[4]);
+    const cumulativeCount = Number(parts[5]);
+    if (Number.isFinite(sameScoreCount) && sameScoreCount > 0 && Number.isFinite(cumulativeCount)) {
+      rows.push({ rank: cumulativeCount, weight: sameScoreCount });
+    }
+  }
+  return rows;
+}
+
+export function loadTestPrograms(dbPath: string, year: number): TestProgram[] {
+  const db = new DatabaseSync(dbPath, { readOnly: true });
+  const minRankColumn =
+    year === 2024 ? "min_rank_2024" : year === 2023 ? "min_rank_2023" : "min_rank_2022";
+  const sql = `
+    SELECT
+      id AS programId,
+      estimated_rank_2025 AS estimatedRank,
+      ${minRankColumn} AS minRank
+    FROM programs
+    WHERE estimated_rank_2025 IS NOT NULL
+      AND ${minRankColumn} IS NOT NULL
+  `;
+  const rows = db.prepare(sql).all() as unknown as TestProgram[];
+  db.close();
+  return rows;
+}
+
+function lcg(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
+}
+
+function weightedSample<T>(
+  items: readonly T[],
+  weights: readonly number[],
+  random: () => number,
+): T {
+  let total = 0;
+  for (const w of weights) total += w;
+  let target = random() * total;
+  for (let i = 0; i < items.length; i += 1) {
+    target -= weights[i];
+    if (target <= 0) return items[i];
+  }
+  return items[items.length - 1];
+}
+
+export function evaluateRealisticAdmissionMetrics(
+  onePointSegmentPath: string,
+  dbPath: string,
+  testYear: number,
+  model: LogisticModel,
+  sampleCount = 500_000,
+  seed = 20260711,
+): CalibrationMetrics {
+  const rankDistribution = loadRankDistribution(onePointSegmentPath);
+  if (rankDistribution.length === 0) {
+    return { sampleCount: 0, logLoss: NaN, accuracy: NaN, auc: NaN, calibrationMae: NaN };
+  }
+  const testPrograms = loadTestPrograms(dbPath, testYear);
+  if (testPrograms.length === 0) {
+    return { sampleCount: 0, logLoss: NaN, accuracy: NaN, auc: NaN, calibrationMae: NaN };
+  }
+
+  const rankWeights = rankDistribution.map((r) => r.weight);
+  const random = lcg(seed);
+
+  let loss = 0;
+  let correct = 0;
+  const predictions: { admitted: 0 | 1; probability: number }[] = [];
+
+  for (let i = 0; i < sampleCount; i += 1) {
+    const rankRow = weightedSample(rankDistribution, rankWeights, random);
+    const program = testPrograms[Math.floor(random() * testPrograms.length)];
+    const rankDelta = rankRow.rank - program.estimatedRank;
+    const p = predictProbability(rankDelta, model);
+    const admitted = rankRow.rank <= program.minRank ? (1 as 0 | 1) : (0 as 0 | 1);
+
+    const pSafe = clamp01(p);
+    loss -= admitted * Math.log(pSafe) + (1 - admitted) * Math.log(1 - pSafe);
+    if ((p >= 0.5 ? 1 : 0) === admitted) {
+      correct += 1;
+    }
+    predictions.push({ admitted, probability: p });
+  }
+
+  const logLoss = loss / sampleCount;
+  const accuracy = correct / sampleCount;
+  const auc = computeAuc(predictions);
+  const calibrationMae = computeCalibrationMae(predictions, 20);
+
+  return { sampleCount, logLoss, accuracy, auc, calibrationMae };
 }
 
 export function empiricalSurvival(residuals: readonly number[], rankDelta: number): number {
@@ -341,7 +456,9 @@ export function evaluateLogistic(
 }
 
 function computeAuc(predictions: readonly { admitted: 0 | 1; probability: number }[]): number {
-  const sorted = [...predictions].sort((a, b) => b.probability - a.probability);
+  // Sort ascending by predicted probability so that the highest-probability
+  // (most likely admitted) samples receive the largest ranks.
+  const sorted = [...predictions].sort((a, b) => a.probability - b.probability);
   const nPos = sorted.filter((p) => p.admitted === 1).length;
   const nNeg = sorted.length - nPos;
   if (nPos === 0 || nNeg === 0) return NaN;

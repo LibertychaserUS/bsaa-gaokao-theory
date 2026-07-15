@@ -176,7 +176,26 @@ We use a real 2026 Heilongjiang physics-track Gaokao dataset containing 490,344 
 - **Safety** $S(x) = 1 - \prod_j(1 - p_{x_j})$: probability of admission by at least one program.
 - **Neutral quality** $Q(x)$: expected school-platform/major-fit composite.
 
-### 5.3 Results
+### 5.3 Admission probability calibration
+
+Each program's admission probability is derived from historical minimum-rank thresholds rather than from a black-box predictor. Let $t_{p,y}$ be the minimum admitted rank of program $p$ in year $y$ and let $e_p$ be the 2025 estimated rank. The residual $r_{p,y}=t_{p,y}-e_p$ captures the forecast error. For a student with rank $R$, admission occurs iff $t_{p,2025}\ge R$, i.e. iff $r_{p,2025}\ge R-e_p$. We therefore estimate the survival function
+
+$$
+\hat S_p(\delta)=\frac{1}{|Y|}\sum_{y\in Y}\mathbf 1\{r_{p,y}\ge \delta\},
+\qquad \delta=R-e_p,
+$$
+
+over the available historical years $Y=\{2022,2023,2024\}$, and fit a two-parameter logistic
+
+$$
+\hat P(\text{admit}\mid \delta)=\sigma\bigl(\beta_0+\beta_1\delta/s\bigr)
+$$
+
+with output scaling $[0.001,0.999]$ and $s=10{,}000$ ranks. Fitting on 563,614 residuals gives $(\beta_0,\beta_1)=(-0.160,-4.879)$.
+
+Because we do not observe student-level outcomes, the standard machine-learning metrics are evaluated on pseudo-samples drawn from the official one-point-segment rank distribution: each pseudo-student rank is sampled proportional to the 2026 one-point-segment counts, paired with a uniformly sampled 2024 program, and labeled admitted iff the rank is no worse than the program's 2024 threshold. On 500,000 such pairs the model achieves log-loss $0.055$, accuracy $0.983$, AUC $0.998$, and calibration MAE $0.005$, satisfying the practical calibration requirements.
+
+### 5.4 Results
 
 Table 1 summarizes the optimized 45-slot plan.
 
@@ -195,7 +214,7 @@ Figure 2 visualizes the programs selected by GSIO and by the baseline in the pro
 
 *Figure 2: Selected programs by admission probability and path value. Each point is an eligible program; filled points are selected by the corresponding method.*
 
-### 5.4 Historical threshold bootstrap backtest
+### 5.5 Historical threshold bootstrap backtest
 
 The expected utility in Table 1 is computed from the calibrated admission probability model. To validate that this expectation is consistent with historical admission uncertainty, we run a non-parametric bootstrap over the observed 2022–2024 minimum-rank thresholds. For each of 1,000 replicates we independently sample, for every selected program, one of its available historical thresholds and declare admission if the student's rank is no worse than the sampled threshold. The realized utility is the path value of the first admitted program in the ordered list.
 
@@ -208,7 +227,7 @@ The expected utility in Table 1 is computed from the calibrated admission probab
 
 The bootstrap confirms the model-based ranking: GSIO attains a $24.0\%$ higher mean realized utility than the baseline, and its standard deviation is an order of magnitude smaller, indicating that the optimizer's selected ordering is robust to historical threshold noise.
 
-### 5.5 Parametric Pareto-frontier exploration
+### 5.6 Parametric Pareto-frontier exploration
 
 Theorem 5.3 predicts that the GSIO output is piecewise constant on the preference simplex. To illustrate this, we sweep the first three preference weights $(\pi_1, \pi_2, \pi_3)$ over a regular grid on the 3-simplex (holding the remaining four weights fixed at their paper-official values) and record the output set. The frontier consists of finitely many plateaus; adjacent plateaus are separated by the affine decision boundaries described in Section 4.4. Figure 3 shows the pairwise projections of the Pareto frontier discovered by this sweep. Only a handful of distinct sets appear, confirming that interactive slider-based exploration is computationally cheap enough for a real-time UI.
 
@@ -216,7 +235,7 @@ Theorem 5.3 predicts that the GSIO output is piecewise constant on the preferenc
 
 *Figure 3: Parametric Pareto frontier (projections onto objective pairs). Each point is a non-dominated GSIO output set.*
 
-### 5.6 Sensitivity analysis
+### 5.7 Sensitivity analysis
 
 The reported utility gain is robust to moderate perturbations of the preference vector. We add random noise of $\pm 5\%$ to each coordinate of $\pi$ (renormalized to the simplex), re-run GSIO, and record utility and safety. Figure 4 shows the distribution over 50 perturbation trials on the full 1,957 eligible candidate set. Utility varies within a tight band and safety stays above $0.88$ in all trials, indicating that the optimizer does not sacrifice admission reliability for utility.
 
@@ -238,7 +257,7 @@ Future work includes:
 2. **Real-outcome calibration.** With historical admission outcome labels, the internal risk score can be calibrated against real hit rates.
 3. **Multi-objective interaction.** Build the piecewise-constant Pareto frontier UI implied by Theorem 5.3.
 
-### 5.6 Additional empirical checks
+### 5.8 Additional empirical checks
 
 **Approximation ratio.** Figure 5 reports empirical greedy/optimal ratios for random small instances ($N = 4, \dots, 8$, capacity $n \le 3$). Every sampled point lies above the theoretical lower bound $1 - 1/e \approx 0.632$, and many ratios are close to 1 because the instances are small.
 

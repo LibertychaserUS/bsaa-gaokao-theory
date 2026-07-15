@@ -17,6 +17,7 @@ import {
   buildRankDeltaBuckets,
   buildResiduals,
   evaluateLogistic,
+  evaluateRealisticAdmissionMetrics,
   fitLogisticToSurvival,
   splitByYear,
   type LogisticModel,
@@ -60,6 +61,7 @@ interface CalibrationOutput {
   metrics: {
     train: ReturnType<typeof evaluateLogistic>;
     test: ReturnType<typeof evaluateLogistic>;
+    realistic: ReturnType<typeof evaluateRealisticAdmissionMetrics>;
   };
   buckets: {
     byProbability: ReturnType<typeof buildProbabilityBuckets>;
@@ -118,11 +120,25 @@ function main(): void {
   const trainMetrics = evaluateLogistic(train, model);
   const testMetrics = evaluateLogistic(test, model);
 
+  console.error("Computing realistic admission metrics from one-point-segment distribution...");
+  const realisticMetrics = evaluateRealisticAdmissionMetrics(
+    config.dataPaths.onePointSegment,
+    dbPath,
+    args.testYear,
+    model,
+    500_000,
+    20260711,
+  );
+  console.error(
+    `Realistic metrics: logLoss=${realisticMetrics.logLoss.toFixed(4)}, accuracy=${realisticMetrics.accuracy.toFixed(4)}, auc=${realisticMetrics.auc.toFixed(4)}, calibrationMae=${realisticMetrics.calibrationMae.toFixed(4)}`,
+  );
+
   const output: CalibrationOutput = {
     probabilityModel: formatModel(model),
     metrics: {
       train: trainMetrics,
       test: testMetrics,
+      realistic: realisticMetrics,
     },
     buckets: {
       byProbability: buildProbabilityBuckets(test, model, 20),

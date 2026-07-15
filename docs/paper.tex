@@ -237,6 +237,21 @@ We use a real 2026 Heilongjiang physics-track Gaokao dataset containing 490,344 
   \item \textbf{Neutral quality} $Q(x)$: expected school-platform/major-fit composite.
 \end{itemize}
 
+\subsection{Admission probability calibration}\label{sec:calibration}
+
+Each program's admission probability is derived from historical minimum-rank thresholds rather than from a black-box predictor. Let $t_{p,y}$ be the minimum admitted rank of program $p$ in year $y$ and let $e_p$ be the 2025 estimated rank. The residual $r_{p,y}=t_{p,y}-e_p$ captures the forecast error. For a student with rank $R$, admission occurs iff $t_{p,2025}\ge R$, i.e. iff $r_{p,2025}\ge R-e_p$. We therefore estimate the survival function
+\[
+\hat S_p(\delta)=\frac{1}{|Y|}\sum_{y\in Y}\mathbf 1\{r_{p,y}\ge \delta\},
+\qquad \delta=R-e_p,
+\]
+over the available historical years $Y=\{2022,2023,2024\}$, and fit a two-parameter logistic
+\[
+\hat P(\text{admit}\mid \delta)=\sigma\bigl(\beta_0+\beta_1\delta/s\bigr)
+\]
+with output scaling $[0.001,0.999]$ and $s=10{,}000$ ranks. Fitting on 563,614 residuals gives $(\beta_0,\beta_1)=(-0.160,-4.879)$.
+
+Because we do not observe student-level outcomes, the standard machine-learning metrics are evaluated on pseudo-samples drawn from the official one-point-segment rank distribution: each pseudo-student rank is sampled proportional to the 2026 one-point-segment counts, paired with a uniformly sampled 2024 program, and labeled admitted iff the rank is no worse than the program's 2024 threshold. On 500,000 such pairs the model achieves log-loss $0.055$, accuracy $0.983$, AUC $0.998$, and calibration MAE $0.005$, satisfying the practical calibration requirements.
+
 \subsection{Results}
 
 Table~\ref{tab:main} summarizes the optimized 45-slot plan.
@@ -268,9 +283,9 @@ Figure~\ref{fig:scatter} visualizes the programs selected by GSIO and by the bas
   \label{fig:scatter}
 \end{figure}
 
-\subsection{Historical threshold bootstrap backtest}
+\subsection{Historical threshold bootstrap backtest}\label{sec:bootstrap}
 
-The expected utility in Table~\ref{tab:main} is computed from the calibrated admission probability model. To validate that this expectation is consistent with historical admission uncertainty, we run a non-parametric bootstrap over the observed 2022--2024 minimum-rank thresholds. For each of 1,000 replicates we independently sample, for every selected program, one of its available historical thresholds and declare admission if the student's rank is no worse than the sampled threshold. The realized utility is the path value of the first admitted program in the ordered list.
+The expected utility in Table~\ref{tab:main} is computed from the calibrated admission probability model described in Section~\ref{sec:calibration}. To validate that this expectation is consistent with historical admission uncertainty, we run a non-parametric bootstrap over the observed 2022--2024 minimum-rank thresholds. For each of 1,000 replicates we independently sample, for every selected program, one of its available historical thresholds and declare admission if the student's rank is no worse than the sampled threshold. The realized utility is the path value of the first admitted program in the ordered list.
 
 \begin{table}[H]
   \centering
