@@ -46,14 +46,17 @@ def gate_a1() -> None:
     for y in YEARS:
         hits = globs(y, "*夏季高考文化成绩一分一段表*.xls")
         report("A1.一分一段", len(hits) == 1, f"{y}: {len(hits)}个")
-    # ③ 计划: 2026/2025 主计划本 或 声明文件
+    # ③ 计划: 2026/2025 主计划本 或 声明文件（声明在 declarations/ 目录）
+    decl_dir = RAW.parent / "declarations"
     for y in ["2025", "2026"]:
         main_plan = globs(y, "*普通类*[计划]*.xls", "*招生计划*.xls")
         main_plan = [f for f in main_plan if "第2次" not in f.name and "第3次" not in f.name
                      and "注册入学" not in f.name and "提前批" not in f.name]
-        declaration = globs(y, "*计划*声明*.md", "*计划*说明*.md")
+        declaration = list(decl_dir.glob(f"*计划*声明*{y}*.md")) + \
+            [f for f in decl_dir.glob("*计划*声明*.md") if y in f.read_text(encoding="utf-8")[:2000]] \
+            if decl_dir.is_dir() else []
         ok = bool(main_plan) or bool(declaration)
-        names = [f.name for f in main_plan + declaration]
+        names = sorted({f.name for f in main_plan + declaration})
         report("A1.主计划本", ok, f"{y}: {names or '缺失且无声明'}")
     # ④ 批次线 (2022-2026, md 格式)
     for y in YEARS:
