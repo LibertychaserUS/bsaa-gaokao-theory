@@ -133,6 +133,30 @@
   +"曾征集"哨兵变量。雷9 合规："模型最坏情形匹配下限"措辞+前置条件声明。雷10 批次：按省×批次
   机制类型路由，仅平行志愿走 BSAA。
 
+## 7.6 开放问题定位：分位数准则级联组合（research-quantile 调研定稿, 2026-07-15）
+
+**新颖性判定（可信度高）**：first-success 级联组合 × 分位数/VaR/CVaR/机会约束准则 × 可含 uncertain random 价值——
+**无人做过**。三条最近线各自止步：①Chade-Smith 谱系风险扩展（含 Ali & Shorrer "Hedging When Applying",
+AER 2025, 115(2):571-598——其"风险态度"经核实是 EU 凹效用 isoelastic，仍是线性期望算子）；
+②分位数偏好决策理论（Manski 1988; Rostek 2010 REStud 77(1); de Castro & Galvao 2019 Econometrica/2022 ET）
+——止步于抽象 acts 与连续时间组合（He-Jiang-Kou 2020：连续域分位数目标已知病态），从未触及离散级联；
+③**最近邻=Li & Ke (2019, ORL 47(5):452-457)** worst-case CVaR MNL assortment——但 MNL 成功概率**内生**
+（IIA 归一化，可能正是其可解性根源）且价值确定已知，不能移植到独立外生 Bernoulli+不确定价值情形，
+**必须防御性引用**。uncertain random 序贯/级联确认空白（Qin 2015 EJOR 等全是静态组合）。
+
+**三层硬度论证链（全部有据）**：①Chern (1992, ORL)：级数系统冗余分配的阈值概率目标已 NP-hard；
+②Bernard & Vanduffel (2015, Dependence Modeling 3(1))：混合分布分位数无跨分量解析分解
+（= MIA/DP 赖以成立的线性可加性在分位数下失效的概率论根源）；③Maehara (2015, ORL 43(5))：
+随机子模函数的 CVaR 不子模且无多项式乘性近似（除非 P=NP）+ Wang & Yu (2026, arXiv:2603.01232)：
+VaR 比 CVaR 更不友好——Chade-Smith 期望目标恰是随机子模集合函数，硬度结果"量身定做"适用。
+
+**论文引出段落草稿已备**（research-quantile 回传原文，入文前需核对：Chambers 2009 出处、
+Coit-Smith 1998 页码、Ali-Shorrer 2025 与此前 research-robust 所引 "Ali & Shorrer 2021 The College
+Portfolio Problem" 是否同一工作——两处引用需统一核实）。锚点：期望侧 Chade-Smith 2006 /
+分位数侧 Rostek 2010 + de Castro-Galvao / 硬度侧 Chern 1992 + Maehara 2015 + Wang-Yu 2026 /
+对照 Li & Ke 2019。附带空白子方向：cascading bandits × CVaR/quantile bandits 融合亦无人做（次要）。
+注意术语陷阱：prophet inequality 的 "quantile" 变体是信息 oracle 非风险准则，勿混引。
+
 ## 8. 状态与下一步
 
 - 已落库：接手 9 commits（产品 8 + 理论 1）；formal/LEMMAS.md；formal/experiments/ 三脚本；本报告。
