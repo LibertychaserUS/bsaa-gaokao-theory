@@ -14,6 +14,13 @@
 阈值相差 3 个数量级（`bsaaCore.ts:24` 的 `1e-12` vs `paperTheory.ts:75` 的 `1e-9`）。详见下方
 S1-2 条目。
 
+**主循环追加纠错声明（2026-07-16）**：本报告 §S1-2 的 tie-break 判定完全正确。主循环在审阅时曾一度认同 `04` 的纠偏（误以为两处排序都用 localeCompare 即无分歧），随后亲自逐行核验 `bsaaCore.ts:155-177` 与 `paperTheory.ts:236-239` 两个**候选选择循环**（非排序函数），坐实 `bsaaCore` 选择循环确无平局分支、`paperTheory` 有显式 `localeCompare` 分支——即主循环自己的纠偏是错的，本报告与 `audit-dp-source`/`audit-layering` 两个独立 agent 的判定成立。记录此事以留痕：主循环的独立核验也会出错，最终由多方逐行复核收敛到正确结论。
+
+**已修复项状态更新（2026-07-16，本报告写于修复前）**：
+- **S1-1（CI 验错对象）已修复** — commit 54a66e1：新增 `tools/runPaperVerification.ts` + `verify:paper` script，CI 现验证论文引用的 `paperTheory` 验证套件（3/3 PASS）。原 `verify:proofs`（验 bsaaCore/proofVerification）保留为叠加而非替换。
+- **S1-4（gates 未接入 CI）已修复** — commit 54a66e1：`gates:math`、`gates:alg`、`verify:paper` 三步已加入 `.github/workflows/ci.yml`，本地全绿验证通过。
+- 其余 S1-2 / S1-3 / S2-* / S3-* 维持本报告结论，按下方优先级矩阵等 Oliver 裁决（多数需先定权威语义再动承重代码，冻结后处理）。
+
 ---
 
 ## 1. 总体判定
