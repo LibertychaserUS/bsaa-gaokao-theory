@@ -55,9 +55,12 @@
 主键 `(year, round, level, school_code, major_code)`。
 
 ### T2 `score_rank`（一分一段事实表）
-`year, category(普通类/体育类/艺术×子类), score, count_at, cum_count, source_file, source_row`。
+`year, subject_pool, score, count_at, cum_count, censor, source_file, source_row`。
+主键 `(year, subject_pool, score)`。`subject_pool ∈ {全体, 物理, 化学, 生物, 思想政治, 历史, 地理}`
+（宽表 unpivot；表头文本"选考X"→X，"全体"保留）。`censor ∈ {exact, head_aggregate}`。
 口径：cum_count = 该分及以上累计人数（=该分考生最低位次上界）。含加分口径按源表声明进表级元数据。
-（列结构待 collect-sd 任务 #8 的实测确认后，由主循环固化为 v1.1 附录，不由执行 agent 自定。）
+列结构已由 v1.1 附录固化、v1.5 头部聚合裁决定案（见下文"头部聚合删失"段）；范围=普通类文化成绩表
+（P7；艺术/体育类分段表封存不进 v1 构建）。
 
 ### T3 `plans`（招生计划表）
 `year, round, school_code, school_name, major_code, major_name, plan_count, subject_req_raw, subject_req_norm, level, source_file, source_row`。
@@ -220,8 +223,22 @@ reason_code 枚举（封闭集，新增须改规范）：
   还不唯一 → 进 M3。
 - **M3 人审层**：输出 `manual_review.csv`（两年候选并排 + 计划数/位次参考），人审后回填。
   **禁止自动模糊匹配**（编辑距离/embedding 一律禁止——模糊匹配是幸存者偏差雷 8 的放大器）。
-- **M4 院校层**：先全量验证 school_code 跨年稳定性（同 code 异名清单=改名/升格记录，以 code 为准）；
-  若发现 code 复用（同 code 指向不同学校）→ fatal 上报，M1-M3 全部重审。
+- **M4 院校层**：先全量验证 school_code 跨年稳定性（同 code 异名清单=改名/升格记录，以 code 为准）。
+  同 code 跨年异名时，**用结构签名区分"真改名"与"code 复用"**（可复现判据，非人审常识）：
+  - **真改名/升格/转设**（→写入 `t5_school_renames.csv` 放行，以 code 为准续接年对）需**同时**满足：
+    ① 变化单向无 flapping（一旦改名不回退）；
+    ② `plan_count` 时间序列跨改名点平滑连续（无断崖）；
+    ③ 校名符合已知中国高校改制范式之一——升格（学院→大学 / 医学院→医科大学）、
+    独立学院转设（"母体大学+X 学院"→独立设置名）、行政更名（同层次换名）。
+  - **code 复用嫌疑**（→ fatal 上报，M1-M3 全部重审）= 上述任一条不满足，
+    典型特征：`plan_count` 序列断崖 + major_code 集合近乎零重叠 + 校名跨领域跳变。
+  - major_code 集合 Jaccard **仅作辅助参考不作硬判据**——升格常伴专业目录扩容重组
+    （实测 A472 新乡医学院→河南医药大学 专业 3→10、Jaccard=0.2 仍是真改名），
+    低 Jaccard 不等于 code 复用。
+  - **裁决记录（v1.6，2026-07-16 主循环实证核验）**：round=1 2022-2025 全量核查得
+    27 个跨年异名 code，0 flapping、计划序列全平滑、21 升格 + 6 转设/更名，
+    **全部判定真改名放行**；无一例 code 复用。此清单为 T5 首次构建基线，
+    后续年份新增异名 code 按上述三签名判据处理，仍不满足才 fatal。
 - **M5 未匹配处理**：unmatched 不是错误——新设/停招专业照常入库（供冷启动研究），
   只是不产生年对训练样本。**报告必须列出 unmatched 计数与占比**（无声即错原则的实体版）。
 
