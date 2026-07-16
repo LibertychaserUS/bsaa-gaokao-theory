@@ -43,3 +43,6 @@ docs/references.bib.bak
 # Auto-generated screenshot previews
 docs/paper_*.png
 .venv-data/
+
+# Shandong dataset (raw+derived local-only; MANIFEST snapshots live in docs/)
+/data/shandong/
