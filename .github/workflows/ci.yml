@@ -43,5 +43,14 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Proof verification
+      - name: Proof verification (bsaaCore battery)
         run: npm run verify:proofs
+
+      - name: Paper verification (paperTheory — the implementation docs/paper.md cites)
+        run: npm run verify:paper
+
+      - name: Math gates (Lean build + zero-sorry + axiom audit)
+        run: npm run gates:math
+
+      - name: Algorithm gates (DP oracle equivalence + invariants)
+        run: npm run gates:alg
