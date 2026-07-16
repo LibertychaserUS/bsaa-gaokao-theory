@@ -65,31 +65,47 @@ def gate_a1() -> None:
         report("A1.批次线", len(hits) >= 1, f"{y}: {[f.name for f in hits] or '缺失'}")
 
 
+SCAN_DIRS = ["raw", "declarations", "newsid_index", "policy_evidence_cache"]
+EXT_RE = r"(?:xls|xlsx|md|doc|docx|pdf|png|tsv|html|txt|csv|json)"
+
+
 def gate_a2() -> None:
-    """A2 MANIFEST 完整性: 逐文件 sha256 对账。"""
+    """A2 MANIFEST 完整性 (v1.2): 四目录逐文件 sha256 对账, 键=相对路径。"""
+    base = RAW.parent
     if not MANIFEST.is_file():
         report("A2.MANIFEST", False, "MANIFEST.md 不存在")
         return
     text = MANIFEST.read_text(encoding="utf-8", errors="replace")
-    recorded: dict[str, str] = {}  # filename -> sha256
-    for m in re.finditer(r"([^\s|/\\]+\.(?:xls|xlsx|md|doc|docx|pdf|png))[^\n]*?([0-9a-f]{64})",
+    recorded: dict[str, str] = {}  # relpath -> sha256
+    dup: list[str] = []
+    for m in re.finditer(rf"`([^`\n]+\.{EXT_RE})`[^\n]*?([0-9a-f]{{64}})",
                          text, re.IGNORECASE):
-        recorded[m.group(1)] = m.group(2).lower()
-    files = [p for p in RAW.rglob("*") if p.is_file()]
-    orphan, ghost_ok, mismatch = [], 0, []
-    for f in files:
-        if f.name not in recorded:
-            orphan.append(str(f.relative_to(RAW)))
+        rel, sha = m.group(1), m.group(2).lower()
+        if rel in recorded:
+            dup.append(rel)
+        recorded[rel] = sha
+    disk: dict[str, Path] = {}
+    for d in SCAN_DIRS:
+        dd = base / d
+        if not dd.is_dir():
             continue
-        h = hashlib.sha256(f.read_bytes()).hexdigest()
-        if h == recorded[f.name]:
-            ghost_ok += 1
+        for p in dd.rglob("*"):
+            if p.is_file() and not p.name.startswith("."):
+                disk[str(p.relative_to(base))] = p
+    orphan = sorted(set(disk) - set(recorded))
+    ghosts = sorted(set(recorded) - set(disk))
+    matched, mismatch = 0, []
+    for rel in sorted(set(disk) & set(recorded)):
+        h = hashlib.sha256(disk[rel].read_bytes()).hexdigest()
+        if h == recorded[rel]:
+            matched += 1
         else:
-            mismatch.append(f.name)
-    ghosts = set(recorded) - {f.name for f in files}
-    report("A2.对账", not orphan and not mismatch and not ghosts,
-           f"匹配{ghost_ok} 孤儿{len(orphan)} 哈希不符{len(mismatch)} 幽灵{len(ghosts)}")
-    for x in (orphan[:5] + mismatch[:5] + sorted(ghosts)[:5]):
+            mismatch.append(rel)
+    ok = not orphan and not mismatch and not ghosts and not dup
+    report("A2.对账", ok,
+           f"匹配{matched} 孤儿{len(orphan)} 哈希不符{len(mismatch)} "
+           f"幽灵{len(ghosts)} 重复{len(dup)} (范围={'+'.join(SCAN_DIRS)})")
+    for x in (orphan[:5] + mismatch[:5] + ghosts[:5] + dup[:5]):
         print(f"        · {x}")
 
 
