@@ -11,7 +11,7 @@
 
 1. **标题**：Pandora's Box Problem with Order Constraints
    **作者+机构**：Shant Boodaghians, Federico Fusco, Philip Lazos, Stefano Leonardi（罗马大学 Sapienza 等）
-   **年份/编号**：arXiv 2002.06968；正式发表 *Mathematics of Operations Research*（DOI 10.1287/moor.2022.1271，〔待核，仅 WebSearch 片段确认卷期）
+   **年份/编号**：arXiv 2002.06968；正式发表 *Mathematics of Operations Research*, Vol. 48, No. 1 (2023-02), pp. 498-519, DOI 10.1287/moor.2022.1271（已通过 CrossRef API 交叉验证卷期页码及作者名单，非待核）
    **一句话主结果**：在盒子之间存在偏序（前序/树形/森林）约束时，若约束是树/森林结构，贪心式的"广义 Weitzman 指数"策略仍可高效求最优；若约束是一般 DAG 或需要满足 matroid 可行性，则求近似最优是 NP-hard。
    **与我们哪条定理/构造的关联**：直接对照 LEMMAS A2（value-index 排序，distribution-free）——本文可视为 A2 在"box 之间有偏序约束"场景下的**推广**方向：当约束图退化为空（无约束，所有志愿可任意排列）时应还原到 Weitzman/A2 型指数排序；BSAA 目前的设定中"须提交有序列表"本身没有强制的树形前序约束（考生可自由排列所有已知志愿），因此本文的树约束可行算法**不是**我们当前定理的特例，而是一个"若未来引入院校间强制填报顺序（如平行志愿分段规则）"时可借用的推广工具。若约束图是一般 DAG，其 NP-hard 结果提示：一旦 BSAA 加入复杂序约束（如"提前批必须排在普通批前"这类跨批次约束构成非树结构），精确 DP（A3）可能不再多项式可解。
    **可访问链接**：https://arxiv.org/abs/2002.06968
@@ -60,12 +60,12 @@
    **与我们哪条定理/构造的关联**：为条目 2-4 那条"nonobligatory inspection 使问题变难"的技术线索提供了一个"折算桥梁"——理论意义上说明 obligatory（BSAA 当前设定）与 nonobligatory（更一般设定）之间的价值差距是可控的（有限乘法因子）。这从侧面支持了一个论点：BSAA 选择 obligatory-inspection 假设（每个志愿必须走完整判定流程）不是丧失一般性的简化，而是问题本身在结构上更良态（可精确 DP 求解）的子类，与更一般情形之间的"价值损失"有明确上界。
    **可访问链接**：https://arxiv.org/abs/2410.19011
 
-8. **标题**：Mechanism Design with Limited Information: The Case of Nonobligatory Inspection（Doval 原始论文，标准引用为 Doval 2018）
+8. **标题**：Whether or Not to Open Pandora's Box（标题已核实，非此前推测标题；标准引用为 Doval 2018）
    **作者+机构**：Laura Doval（加州理工学院 Caltech）
-   **年份/编号**：*Journal of Economic Theory*, Vol. 175 (2018), pp. 127-158（最早提出 nonobligatory inspection 概念的经济学文献，是条目 2、3、4、7 的共同理论源头）
-   **一句话主结果**：首次在 Pandora's Box 框架中引入"非强制检查"（可以不检查直接选择盒子）这一假设，并指出这打破了 Weitzman 简单指数策略的最优性，需要更复杂的策略刻画。
+   **年份/编号**：*Journal of Economic Theory*, Vol. 175 (2018), pp. 127-158（已通过条目 3 全文参考文献列表交叉验证标题、卷期页码，非待核；最早提出 nonobligatory inspection 概念的经济学文献，是条目 2、3、4、7 的共同理论源头，条目3正文引用标注为 [Dov18]）
+   **一句话主结果**：首次在 Pandora's Box 框架中引入"非强制检查"（可以不检查直接选择盒子）这一假设，并指出这打破了 Weitzman 简单指数策略的最优性，需要更复杂的策略刻画（条目3正文提及其 Problem 3 给出一个三盒反例说明最优策略的非平凡性）。
    **与我们哪条定理/构造的关联**：是"何时经典 Weitzman/index 型策略不再最优"这一问题脉络的起点，可用于在论文相关工作部分说明：BSAA 之所以能够保留 A2 的简单排序最优性（且是 distribution-free 精确版本），关键前提正是延续了经典 obligatory-inspection 假设，未涉入 Doval 打开的"非强制检查"复杂性区域。
-   **可访问链接**：https://authors.library.caltech.edu/records（Caltech 机构库存档，具体条目页面〔待核，通过 curl 重定向确认可访问但未逐一核对记录号）
+   **可访问链接**：https://www.sciencedirect.com/science/article/pii/S0022053118300148（Journal of Economic Theory 官方页面，DOI 待补；备用：通过条目3参考文献列表核实的二次来源）
 
 9. **标题**：Efficient Pricing and Contracting Combinatorial Prophet Inequalities and Pandora's Box via Duality（Price of Information 框架论文，常引用为 Singla 2018）
    **作者+机构**：Sahil Singla（普林斯顿大学）
@@ -94,8 +94,8 @@
 
 ## 三、待核事项清单（禁止在正式论文中未经二次确认直接引用的细节）
 
-- 条目 1 的 DOI / MOR 卷期号，仅凭 WebSearch 片段确认，未逐字核对期刊页面。
+- ~~条目 1 的 DOI / MOR 卷期页码~~ 已核实：通过 CrossRef API（`https://api.crossref.org/works/10.1287/moor.2022.1271`）交叉验证，确认为 *Mathematics of Operations Research*, Vol. 48, No. 1 (2023-02), pp. 498-519，作者名单 Shant Boodaghians, Federico Fusco, Philip Lazos, Stefano Leonardi 与 arXiv 版本一致；pubsonline.informs.org 页面本身仍被 Cloudflare 拦截无法直接访问，但 CrossRef 元数据已足够可信，可放心引用。
 - ~~条目 3 中 "[GMS08]" 是否确为 Guha-Munagala-Sarkar (2008)~~ 已核实：确为 Sudipto Guha, Kamesh Munagala, Saswati Sarkar, CoRR abs/0804.1724 (2008)，通过条目 3 全文参考文献列表交叉验证，可放心引用。
-- 条目 6（2502.00228）的完整作者名单未逐一核实，仅有部分姓氏来自 WebSearch 片段。
-- 条目 7（2410.19011）的标题与作者组合为通过引用链检索所得，未取得该论文摘要页原文逐字确认，标题措辞可能不准确。
-- 条目 8（Doval 2018）的 Caltech 机构库存档具体页面未逐条核对记录号，卷期页码来自 WebSearch 二次来源，建议正式引用前用 JET 官方页面或 Google Scholar 核对一次。
+- ~~条目 6（2502.00228）作者名单~~ 已核实：Yuanyuan Yang, Ruimin Zhang, Jamie Morgenstern, Haifeng Xu，通过 arXiv 摘要页全文核实。
+- ~~条目 7（2410.19011）标题与作者~~ 已核实：Ziv Scully, Laura Doval，标题为《Local Hedging Approximately Solves Pandora's Box Problems with Nonobligatory Inspection》，通过 arXiv 摘要页全文核实。
+- ~~条目 8（Doval 2018）篇名~~ 已核实：《Whether or Not to Open Pandora's Box》，*Journal of Economic Theory* 175:127-158 (2018)，通过条目 3 全文参考文献列表 [Dov18] 条目交叉验证；ScienceDirect 官方 DOI 链接页面本身因反爬虫机制未能逐字核对，建议正式引用前用图书馆代理二次确认 DOI。
