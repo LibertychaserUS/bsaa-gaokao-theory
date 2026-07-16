@@ -19,6 +19,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "verify:proofs": "npm run build && node dist/tools/runProofVerification.js",
     "verify:architecture": "node tools/architecture-guard.mjs",
+    "gates:math": "bash pipeline/gates/math_gates.sh",
+    "gates:alg": "node pipeline/gates/alg_gates.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",

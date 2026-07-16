@@ -174,3 +174,16 @@ MANIFEST 行格式固化为"反引号相对路径 + 行内 sha256"（审计正�
   重跑全套门禁 + 抽查产物 + 出具核验报告——主循环只读两份报告裁决、按需抽查，
   不逐文件亲验；③执行者与复核者禁止互相沟通（独立性）；④主循环保留终审权与
   黄金断言抽查权（L4 精神不变，实施方式升级为报告裁决制）。
+
+## ALG 门覆盖缺口 (主循环独立核验 theory-gates 时发现, 2026-07-16)
+- **现状**：alg_gates.mjs 的 ALG1 oracle 等价用的是脚本内**复刻的 DP** vs 暴力枚举——验证的是"DP 递推实现正确"，
+  **未验证生产求解器**。生产代码是 src/domain/paperTheory.ts 的 `greedySubmodularOptimization`（GSIO 贪心）+
+  `bruteForceOptimal`，两者均为纯内存数组接口 (PaperCandidate[], capacity, pi)，**不依赖 DB，可用合成候选独立测**。
+- **应补门 ALG1c (生产求解器 oracle 等价)**：import dist/src/domain/paperTheory.js 的生产 greedy 与 bruteForce，
+  在合成候选上对比 —— 但这里验证的是**效用近似比**（GSIO 是贪心，非精确），不是逐字节相等。
+  formal/experiments/dp_vs_gsio_real.mjs 已在真实黑龙江实例上跑过：DP−GSIO=1.67e-9（效用近乎相等）但
+  **集合重叠仅 26/45**——印证 §2"近优大平台期"（目标在最优附近极平，多组合近最优）。
+  ⚠️ dp_vs_gsio_real.mjs 用 data/gaokao.bsaa.sqlite（**L区污染，含 estimated_rank_2025**）+黑龙江旧数据，
+  **禁止进门禁**（跨区红线）。ALG1c 必须用合成候选，不碰任何 R/L 区真实数据。
+- **性质**：这是"验证覆盖面"缺口非正确性缺陷——已证的是 DP 实现对 + 生产 GSIO 在真实实例上近最优；
+  缺的是把"生产 GSIO 近似比"做成可重复门。不阻塞当前理论轨（MATH 全绿+ALG 复刻DP全绿），登记为 ALG 门增强项。
