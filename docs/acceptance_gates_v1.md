@@ -118,6 +118,16 @@ MANIFEST 行格式固化为"反引号相对路径 + 行内 sha256"（审计正�
 - **C3 删失点处理**：censor=le/missing 的行不进点估计残差池；删失似然或显式剔除，
   处理方式在构建元数据中声明。"前50名"行出现在普通残差池 = 失败。
 - **C4 可复现**：固定种子重跑，全部系数/预测摘要一致（与 G8 同标准）。
+- **C7 G_p 版本锁（裁决 A6，Oliver 2026-07-16）**：全系统只能有**唯一生效的 G_p 概率实现**。
+  落地要求：①G_p 实现暴露单一入口（如 `probabilityModel.ts` 的 `predictAdmissionProbability`），
+  且带显式 `MODEL_VERSION` 常量（语义化，如 `gp-v1-logistic-survival` / `gp-v2-order-statistic`）；
+  ②任何下游（DP 契约装配、回测、冻结预测、产品 API）消费概率只准走这一个入口，
+  审计脚本 grep 全仓库确认无第二处自算概率（无裸 sigmoid、无旁路残差→概率转换）；
+  ③冻结产物（F1）必须记录所用 `MODEL_VERSION`；短期方案（分层 logistic/beta）与
+  中期方案（阶序统计量 G_p / GAMLSS）切换 = 版本号跃迁 + 显著声明生效时间点，
+  两者**禁止并存于同一次冻结**。违反（存在两套概率口径被不同模块分别调用）= 雷 7 的概率口径分裂形态 = 失败。
+  **注**：当前 `src/infrastructure/probabilityCalibration.ts`（旧世界观 logistic/survival + 读 L 区库）
+  在 G_p v1 全新实现落地时**整体弃用**，不得作为第二口径残留。
 
 基线相对门（留一年回测，测试年=2025）：
 - **C5 打不过就不上**：预设基线 B0=去年位次直接搬运（carry-forward）、
