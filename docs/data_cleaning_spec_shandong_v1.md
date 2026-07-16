@@ -60,7 +60,10 @@
 （列结构待 collect-sd 任务 #8 的实测确认后，由主循环固化为 v1.1 附录，不由执行 agent 自定。）
 
 ### T3 `plans`（招生计划表）
-`year, school_code, school_name, major_code, major_name, plan_count, subject_req_raw, subject_req_norm, level, source_file, source_row`。
+`year, round, school_code, school_name, major_code, major_name, plan_count, subject_req_raw, subject_req_norm, level, source_file, source_row`。
+`round ∈ {2,3}`（文件名解析；主计划本官方不发布——见 declarations/ 声明，故无 round=1 全量计划）；
+主键 `(year, round, school_code, major_code)`（v1.2 修订：同一专业可在第 2、3 次剩余计划中都出现，
+无 round 列会主键冲突）。
 `subject_req_norm` 枚举：`不限` / `物` / `化` / `物+化` / `物或化` / 其他组合的规范串——
 这是雷 13（2024 选科断层）flag 的数据源。列结构同样待实测后固化。
 
@@ -76,7 +79,9 @@
 reason_code 枚举（封闭集，新增须改规范）：
 `UNKNOWN_RANK_FORMAT` / `EMPTY_RANK` / `MAJOR_SPLIT_FAIL` / `SCHOOL_SPLIT_FAIL` /
 `PAREN_UNBALANCED` / `UNKNOWN_ANNOTATION` / `BAD_PLAN_COUNT` / `HEADER_UNRECOGNIZED` /
-`DUP_PRIMARY_KEY` / `SHEET_STRUCTURE_UNEXPECTED` / `SUBJECT_REQ_UNPARSED`。
+`DUP_PRIMARY_KEY` / `SHEET_STRUCTURE_UNEXPECTED` / `SUBJECT_REQ_UNPARSED` /
+`IMAGE_TRANSCRIBED`（v1.2 增：批次线数字锁在公告附图中、经视觉转录入库的溯源标记——
+文档级转录非行级判断，须记附图路径）。
 
 ---
 
@@ -128,6 +133,13 @@ reason_code 枚举（封闭集，新增须改规范）：
     （`不限选考科目类专业` 等）、语种（`外语语种为英语`/`英语`）、就读地点说明（`就读地点泰安`、
     `大一泰安，大二大三青岛`、单独城市名如 `广州`）、学费/收费说明、单科成绩要求、体检要求。
   - 词表未覆盖 → cls=`unclassified` + 台账 `UNKNOWN_ANNOTATION`（人审后进词表 v+1，全量重跑）。
+  - **v1.2 词表冷启动条款（主循环立法）**：地基 agent 须先对 4 年投档表括号注记全集做实测普查，
+    按本条模式规则生成词表扩展提案并冻结为 v1 词表；**硬护栏**=含身份触发词
+    （合作|专项|公费|定向|校区|分校|走读|师范|学分互认|交流|双学|嵌入式|一体化|年制|订单|预科|民族班）
+    的注记**禁止**自动归入非 identity——匹配不进 identity 白名单的触发词注记一律留 unclassified 进台账；
+    扩展提案全量存档 `pipeline/build_derived/vocab_proposals_v1.tsv` 待主循环人审追认（审后 v+1）。
+    理由：descriptive/contextual 误分类不进匹配键、无害可追改；identity 漏分类才是幸存者偏差源，
+    已由触发词护栏+G5 注记计数断言双重封堵。
   - **伙伴名规范化**：校企合作伙伴去 `股份有限|有限|集团` 后缀再比较
     （真实正例：`青岛英谷教育科技公司` ≡ `青岛英谷教育科技股份有限公司`）。
   - **班型名注意**：descriptive 不进 M1/M2 匹配键，但在 M2 组内消歧时参与（见 §4）——
@@ -165,8 +177,9 @@ reason_code 枚举（封闭集，新增须改规范）：
   ③ 2024/2025 各存在恰 1 条清华 censor=le 删失行（min_rank=50）；
   ④ 2022 存在恰 1 条 B417 北京联合大学 missing 行；
   ⑤ 注记计数基线：首次成功构建时把各 identity 注记的拆分后计数冻结进 `golden_baseline.json`，
-    此后每次重跑必须逐项相等；首次构建 sanity 区间：`师范类` ∈ [4679, 5500]
-    （未拆分口径普查值 4679 为下界——复合注记拆分只会增加计数，超上界=拆分逻辑跑飞）。
+    此后每次重跑必须逐项相等；首次构建 sanity 区间：**round=1（本科主轮）行内** `师范类` ∈ [4679, 5500]
+    （v1.2 明确口径：4679 为第 1 次表未拆分普查值——原文未限定轮次，而 1/2/3 轮全量普查实测 6092，
+    区间只对主轮成立；拆分只增计数，超上界=拆分逻辑跑飞）。
 - **G6 一分一段单调性**（T2）：按 score 降序 cum_count 严格递增；score 区间连续无洞。
 - **G7 台账闭合**：release 前 `UNKNOWN_ANNOTATION`/`UNKNOWN_RANK_FORMAT`/`HEADER_UNRECOGNIZED`
   的未决（resolution=NULL）条目必须为 0——即全部经人审定夺。其余 reason_code 允许带 resolution 存档。
@@ -217,7 +230,8 @@ reason_code 枚举（封闭集，新增须改规范）：
 
 ## 6. 版本与变更
 
-- 本文件版本随规则/词表变更递增（v1 → v1.1：T2/T3 列结构附录；v2：人审后词表扩充）。
+- 本文件版本随规则/词表变更递增（v1 → v1.1：T2/T3 列结构附录；v1.2：T3 增 round 列+主键修订、
+  T2 head_aggregate 哨兵 G3 构造性豁免——均为主循环立法修订；v2：人审后词表扩充）。
 - 每次 D 区构建在 build_meta.json 中锁定（规范版本, 词表版本, 脚本 git hash）三元组；
   论文引用 D 区数字时引用该三元组 + R 区源文件 sha256（与 §7.7 引用纪律衔接）。
 
@@ -234,6 +248,8 @@ reason_code 枚举（封闭集，新增须改规范）：
 - **头部聚合删失**：首个数据行 累计>本段（如 2022 首行 score=680 本段13 累计55）
   ⇒ 更高分未逐分公布，差额=聚合的顶部人数。解析规则：首行差额显式入库为
   `(score=首行分+1, count_at=差额, cum_count=差额, censor='head_aggregate')` 一条哨兵记录。
+  （v1.2 注：该哨兵行 score 为构造值，G3 值域检查对 censor='head_aggregate' 行上界放宽至 751，
+  其余行仍按 [100,750]——这是构造性豁免，非门槛放宽。）
 - **科目列顶部空白**：高分段冷门科目（政/史/地）为空串 ⇒ 记 0（无人达该分），非 missing。
 - **T2 schema 修订**：`score_rank(year, subject_pool, score, count_at, cum_count, censor, source_file, source_row)`，
   `subject_pool ∈ {全体,物理,化学,生物,思想政治,历史,地理}`——宽表按科目 unpivot 成长表。

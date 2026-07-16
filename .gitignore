@@ -46,3 +46,7 @@ docs/paper_*.png
 
 # Shandong dataset (raw+derived local-only; MANIFEST snapshots live in docs/)
 /data/shandong/
+
+# build_derived 可再生中间产物
+pipeline/build_derived/__pycache__/
+pipeline/build_derived/annotation_survey.tsv
