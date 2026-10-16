@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma client
+        run: npm run db:generate
+
       - name: Apply database migrations
         run: npm run db:migrate:deploy
 
@@ -48,6 +51,17 @@ jobs:
 
       - name: Paper verification (paperTheory — the implementation docs/paper.md cites)
         run: npm run verify:paper
+
+      - name: Cache elan toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('formal/lean-toolchain') }}
+
+      - name: Setup Lean (elan)
+        run: |
+          curl -sSf https://elan.lean-lang.org/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Math gates (Lean build + zero-sorry + axiom audit)
         run: npm run gates:math
