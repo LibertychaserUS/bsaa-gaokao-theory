@@ -267,7 +267,7 @@ async function buildFigure5Approximation(
 
   const spec: vegaLite.TopLevelSpec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    title: "Empirical approximation ratios vs instance size",
+    title: "Greedy-to-optimal ratio vs instance size",
     width: 400,
     height: 300,
     data: { values: records },
@@ -373,19 +373,19 @@ function buildTable3Verification(config: ReturnType<typeof loadConfig>): void {
 
   const rows = [
     {
-      theorem: "Value-Index (Thm 3.1)",
+      theorem: "Value-Index (Thm 4.1)",
       status: result.valueIndex.ok ? "Pass" : "Fail",
       trials: "exhaustive N≤8 + 100 random",
       note: result.valueIndex.message,
     },
     {
-      theorem: "Submodularity (Thm 4.2)",
+      theorem: "Submodularity (Thm 4.3)",
       status: result.submodularity.ok ? "Pass" : "Fail",
       trials: "exhaustive N≤6 + 100 random",
       note: result.submodularity.message,
     },
     {
-      theorem: "Greedy approximation (Thm 4.3)",
+      theorem: "Greedy exactness (Thm 4.4)",
       status: result.approximationRatio.ok ? "Pass" : "Fail",
       trials: "100 random + hand-checked N=4,n=2",
       note: `${approx.counterExample?.ratio.toFixed(4)} ≥ ${(1 - 1 / Math.E).toFixed(4)}`,

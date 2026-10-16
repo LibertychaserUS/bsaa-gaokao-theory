@@ -1,18 +1,18 @@
 [
   {
-    "theorem": "Value-Index (Thm 3.1)",
+    "theorem": "Value-Index (Thm 4.1)",
     "status": "Pass",
     "trials": "exhaustive N≤8 + 100 random",
     "note": "Value-Index theorem passed 100 random trials."
   },
   {
-    "theorem": "Submodularity (Thm 4.2)",
+    "theorem": "Submodularity (Thm 4.3)",
     "status": "Pass",
     "trials": "exhaustive N≤6 + 100 random",
     "note": "Submodularity passed all random trials (N≤6 exhaustive)."
   },
   {
-    "theorem": "Greedy approximation (Thm 4.3)",
+    "theorem": "Greedy exactness (Thm 4.4)",
     "status": "Pass",
     "trials": "100 random + hand-checked N=4,n=2",
     "note": "1.0000 ≥ 0.6321"

@@ -1,13 +1,13 @@
 # BSAA/GSIO Theory for Gaokao Volunteer Recommendation
 
-This repository contains the OR-paper-grade implementation of the **Bayesian Sequential Assignment with Absorption (BSAA)** and **Greedy Submodular Index Ordering (GSIO)** theory for the Gaokao university-admission recommendation problem.
+This repository contains the OR-paper-grade implementation of the **Bayesian Sequential Assignment with Absorption (BSAA)** and **Greedy Submodular Optimizer with Internal Ordering (GSIO)** theory for the Gaokao university-admission recommendation problem.
 
 It is intentionally split from the full product codebase so the mathematical artifacts can be reviewed, cited, and released independently.
 
 ## Scope
 
 - `src/domain/bsaaCore.ts` — core submodular set function, value-index ordering, greedy selection, brute-force oracle.
-- `src/domain/proofVerification.ts` — reproducible verification of Theorem 3.1, Theorem 4.2, Theorem 4.3.
+- `src/domain/proofVerification.ts` — reproducible verification of the Value-Index theorem (Theorem 4.1), submodularity (Theorem 4.3), and the greedy ratio bound.
 - `src/domain/paperTheory.ts` — Pareto frontier and parametric weight sampling helpers for the paper.
 - `src/domain/bsaaBacktest.ts` — backtesting utilities for calibrated risk models.
 - `src/schemas.ts` — Zod runtime schemas; single source of truth for TS types, API contracts, and DB serialization.
@@ -44,7 +44,7 @@ All commits are guarded by:
 - ESLint with `@typescript-eslint/strict-type-checked`
 - Prettier formatting
 - Husky pre-commit: lint-staged + typecheck + test
-- GitHub Actions: typecheck, lint, format, architecture guard, tests, proof verification
+- GitHub Actions: typecheck, lint, format, architecture guard, tests, proof verification, paper verification, Lean math gates (zero sorry + axiom audit), algorithm gates
 - Architecture guard (AST): forbids cross-layer imports and cycles
 
 ## Backend architecture

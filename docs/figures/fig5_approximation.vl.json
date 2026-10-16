@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "title": "Empirical approximation ratios vs instance size",
+  "title": "Greedy-to-optimal ratio vs instance size",
   "width": 400,
   "height": 300,
   "data": {
